@@ -15,7 +15,6 @@ import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {Ownable2StepUpgradeable} from "@openzeppelin/contracts-upgradeable/access/Ownable2StepUpgradeable.sol";
 import {ERC20Upgradeable} from "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
-import {IFeeHandler} from "src/interfaces/IFeeHandler.sol";
 import {ISharesTransferValidator} from "src/interfaces/ISharesTransferValidator.sol";
 import {IValuationHandler} from "src/interfaces/IValuationHandler.sol";
 import {StorageHelpersLib} from "src/utils/StorageHelpersLib.sol";

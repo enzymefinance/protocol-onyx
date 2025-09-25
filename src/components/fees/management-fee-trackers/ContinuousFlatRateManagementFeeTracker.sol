@@ -13,7 +13,6 @@ pragma solidity 0.8.28;
 
 import {IManagementFeeTracker} from "src/components/fees/interfaces/IManagementFeeTracker.sol";
 import {FeeTrackerHelpersMixin} from "src/components/fees/utils/FeeTrackerHelpersMixin.sol";
-import {Shares} from "src/shares/Shares.sol";
 import {ONE_HUNDRED_PERCENT_BPS, SECONDS_IN_YEAR} from "src/utils/Constants.sol";
 import {StorageHelpersLib} from "src/utils/StorageHelpersLib.sol";
 

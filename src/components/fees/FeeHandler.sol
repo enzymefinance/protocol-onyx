@@ -11,7 +11,6 @@
 
 pragma solidity 0.8.28;
 
-import {IERC20Metadata as IERC20} from "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import {IManagementFeeTracker} from "src/components/fees/interfaces/IManagementFeeTracker.sol";
 import {IPerformanceFeeTracker} from "src/components/fees/interfaces/IPerformanceFeeTracker.sol";
 import {ValuationHandler} from "src/components/value/ValuationHandler.sol";
