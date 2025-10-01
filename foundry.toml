@@ -6,3 +6,16 @@ via_ir = true
 optimizer = true
 optimizer_runs = 200
 fs_permissions = [{ access = "write", path = "./deploy/"}]
+
+[lint]
+# Several lints fail on acronyms like "ERC" instead of "Erc", so we exclude those
+exclude_lints = [
+    "pascal-case-struct",
+    "mixed-case-function",
+    "mixed-case-variable",
+    "asm-keccak256"
+]
+ignore = [
+    "src/interfaces/external/**/*.sol",
+    "test/**/*.sol"
+]
