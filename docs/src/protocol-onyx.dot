@@ -1,0 +1,686 @@
+digraph SubgraphProtocolOnyx {
+    // graph [ratio = "auto", page = "100", compound = true, bgcolor = "#2e3e56", fontname = "helvetica Neue Ultra Light", fontcolor="#f0f0f0", ranksep="0.3", nodesep = "0.2"];
+    graph [ratio = "auto", compound = true, bgcolor = "#2e3e56", fontname = "helvetica Neue Ultra Light", fontcolor="#f0f0f0", nodesep = "0.2"];
+    node [ style = "filled", fillcolor = "#edad56", color = "#edad56", penwidth = 3, fontname = "helvetica Neue Ultra Light" ];
+    edge [ color = "#fcfcfc", penwidth = 2, fontname = "helvetica Neue Ultra Light", len="0.2" ];
+
+    //================================================================
+    // 1. SharesBeaconFactory Contract
+    subgraph cluster_SharesBeaconFactory {
+        graph [ label = "SharesBeaconFactory", color = "#445773", fontcolor = "#f0f0f0", style="rounded", bgcolor="#445773" ];
+
+        subgraph cluster_SharesBeaconFactoryStorage {
+            graph [ label = "Storage", color = "#e8726d", fontcolor = "#f0f0f0", style = "rounded,dashed", bgcolor = "#3b4b63" ];
+            "SharesBeaconFactory.implementation"[ label = "implementation", color="#007bff", fillcolor="#007bff" ]
+            "SharesBeaconFactory.isInstance"[ label = "isInstance", color="#007bff", fillcolor="#007bff" ]
+            "SharesBeaconFactory.GLOBAL"[ label = "GLOBAL", color="#007bff", fillcolor="#007bff" ]
+        }
+        "SharesBeaconFactory.constructor"[ label = "constructor", color="#28a745"]
+        "SharesBeaconFactory.deployProxy"[ label = "deployProxy", color="#FF9797", fillcolor="#FF9797" ]
+        "SharesBeaconFactory.setImplementation"[ label = "setImplementation", color="#28a745", fillcolor="#FF9797" ]
+    }
+
+    // SharesBeaconFactory Contract Edges
+
+    "SharesBeaconFactory.constructor" -> "Global.owner" [ color="#007bff", fontcolor="#FFD700", label="1. Get global Admin Address", id="flow-SharesBeaconFactory_constructor-step-1", lhead=cluster_Global ];
+    "SharesBeaconFactory.constructor" -> "SharesBeaconFactory.GLOBAL" [ color="#FF9797", fontcolor="#FFD700", label="2. Sets GLOBAL Admin", id="flow-SharesBeaconFactory_constructor-step-2" ];
+
+    "SharesBeaconFactory.setImplementation" -> "SharesBeaconFactory.implementation" [ color="#FF9797", fontcolor="#FFD700", label="Sets Implimentation", id="flow-SharesBeaconFactory_setImplementation-step-1" ];
+
+    "SharesBeaconFactory.deployProxy" -> "Shares.constructor" [ color="#FF9797", fontcolor="#FFD700", label="Deploy an Instance of Shares", id="flow-SharesBeaconFactory_deployProxy-step-1" ];
+    "SharesBeaconFactory.deployProxy" -> "SharesBeaconFactory.isInstance" [ color="#FF9797", fontcolor="#FFD700", label="Record Instance Shares creation", id="flow-SharesBeaconFactory_deployProxy-step-2" ];
+
+
+    //================================================================
+    // 2. Shares Contract
+    subgraph cluster_Shares {
+        graph [ label = "Shares", color = "#445773", fontcolor = "#f0f0f0", style="rounded", bgcolor="#445773" ];
+
+        subgraph cluster_ValuationHandlerBeaconFactoryStorage {
+            graph [ label = "Storage", color = "#e8726d", fontcolor = "#f0f0f0", style = "rounded,dashed", bgcolor = "#3b4b63" ];
+
+            "Shares.name"[ label = "name", color="#28a745", fillcolor="#28a745" ]
+            "Shares.symbol"[ label = "symbol", color="#28a745", fillcolor="#28a745" ]
+            "Shares.decimals"[ label = "decimals", color="#28a745", fillcolor="#28a745" ]
+            "Shares.totalSupply"[ label = "totalSupply", color="#007bff", fillcolor="#007bff" ]
+            "Shares.balanceOf"[ label = "balanceOf", color="#007bff", fillcolor="#007bff" ]
+            "Shares.allowance"[ label = "allowance", color="#007bff", fillcolor="#007bff" ]
+            "Shares.pendingOwner"[ label = "pendingOwner", color="#007bff", fillcolor="#007bff" ]
+            "Shares.owner"[ label = "owner", color="#007bff", fillcolor="#007bff" ]
+            "Shares.getValueAsset"[ label = "getValueAsset", color="#007bff", fillcolor="#007bff" ]
+            "Shares.getFeeHandler"[ label = "getFeeHandler", color="#007bff", fillcolor="#007bff" ]
+            "Shares.getSharesTransferValidator"[ label = "getSharesTransferValidator", color="#007bff", fillcolor="#007bff" ]
+            "Shares.getValuationHandler"[ label = "getValuationHandler", color="#007bff", fillcolor="#007bff" ]
+            "Shares.isDepositHandler"[ label = "isDepositHandler", color="#007bff", fillcolor="#007bff" ]
+            "Shares.isRedeemHandler"[ label = "isRedeemHandler", color="#007bff", fillcolor="#007bff" ]
+            "Shares.isAdmin"[ label = "isAdmin", color="#007bff", fillcolor="#007bff" ]
+        }
+
+        "Shares.transferOwnership"[ label = "transferOwnership", color="#28a745", fillcolor="#FF9797" ]
+        "Shares.acceptOwnership"[ label = "acceptOwnership", color="#28a745", fillcolor="#FF9797" ]
+        "Shares.renounceOwnership"[ label = "renounceOwnership", color="#28a745", fillcolor="#FF9797" ]
+
+        "Shares.transfer"[ label = "transfer", color="#FF9797", fillcolor="#FF9797" ]
+        "Shares.transferFrom"[ label = "transferFrom", color="#FF9797", fillcolor="#FF9797" ]
+        "Shares.approve"[ label = "approve", color="#FF9797", fillcolor="#FF9797" ]
+
+        "Shares.isAdminOrOwner"[ label = "isAdminOrOwner", color="#28a745", fillcolor="#007bff" ]
+        "Shares.constructor"[ label = "constructor", color="#28a745"]
+        "Shares.init"[ label = "init", color="#28a745", fillcolor="#FF9797" ]
+        "Shares.authTransfer"[ label = "authTransfer", color="#28a745", fillcolor="#FF9797" ]
+        "Shares.authTransferFrom"[ label = "authTransferFrom", color="#28a745", fillcolor="#FF9797" ]
+        "Shares.addAdmin"[ label = "addAdmin", color="#28a745", fillcolor="#FF9797" ]
+        "Shares.removeAdmin"[ label = "removeAdmin", color="#28a745", fillcolor="#FF9797" ]
+        "Shares.addDepositHandler"[ label = "addDepositHandler", color="#28a745", fillcolor="#FF9797" ]
+        "Shares.addRedeemHandler"[ label = "addRedeemHandler", color="#28a745", fillcolor="#FF9797" ]
+        "Shares.removeDepositHandler"[ label = "removeDepositHandler", color="#28a745", fillcolor="#FF9797" ]
+        "Shares.removeRedeemHandler"[ label = "removeRedeemHandler", color="#28a745", fillcolor="#FF9797" ]
+        "Shares.setFeeHandler"[ label = "setFeeHandler", color="#28a745", fillcolor="#FF9797" ]
+        "Shares.setSharesTransferValidator"[ label = "setSharesTransferValidator", color="#28a745", fillcolor="#FF9797" ]
+        "Shares.setValuationHandler"[ label = "setValuationHandler", color="#28a745", fillcolor="#FF9797" ]
+        "Shares.sharePrice"[ label = "sharePrice", color="#007bff", fillcolor="#007bff" ]
+        "Shares.shareValue"[ label = "shareValue", color="#007bff", fillcolor="#007bff" ]
+        "Shares.mintFor"[ label = "mintFor", color="#28a745", fillcolor="#FF9797" ]
+        "Shares.burnFor"[ label = "burnFor", color="#28a745", fillcolor="#FF9797" ]
+        "Shares.withdrawAssetTo"[ label = "withdrawAssetTo", color="#28a745", fillcolor="#FF9797" ]
+    }
+    // Shares Edges
+    "Shares.init" -> "Shares.name" [ color="#FF9797", fontcolor="#FFD700", label="1. Initialize name", id="flow-Shares_init-step-1" ];
+    "Shares.init" -> "Shares.symbol" [ color="#FF9797", fontcolor="#FFD700", label="2. Initialize symbol", id="flow-Shares_init-step-2" ];
+    "Shares.init" ->  "Shares.owner" [ color="#FF9797", fontcolor="#FFD700", label="3. Initialize owner", id="flow-Shares_init-step-3" ];
+    "Shares.init" -> "Shares.getValueAsset"  [ color="#FF9797", fontcolor="#FFD700", label="4. Initialize valueAsset", id="flow-Shares_init-step-4" ];
+
+    "Shares.addAdmin" -> "Shares.isAdmin" [ color="#FF9797", fontcolor="#FFD700", label="Add Admin", id="flow-Shares_addAdmin-step-1" ];
+
+    "Shares.removeAdmin" ->  "Shares.isAdmin" [ color="#FF9797", fontcolor="#FFD700", label="Remove Admin", id="flow-Shares_removeAdmin-step-1" ];
+
+    "Shares.addDepositHandler" -> "Shares.isDepositHandler"  [ color="#FF9797", fontcolor="#FFD700", label="Add Deposit Handler", id="flow-Shares_addDepositHandler-step-1" ];
+
+    "Shares.addRedeemHandler" -> "Shares.isRedeemHandler" [ color="#FF9797", fontcolor="#FFD700", label="Add Redeem Handler", id="flow-Shares_addRedeemHandler-step-1" ];
+
+    "Shares.removeDepositHandler" -> "Shares.isDepositHandler"  [ color="#FF9797", fontcolor="#FFD700", label="remove DepositHandler", id="flow-Shares_removeDepositHandler-step-1" ];
+
+    "Shares.removeRedeemHandler" -> "Shares.isRedeemHandler"  [ color="#FF9797", fontcolor="#FFD700", label="remove RedeemHandler", id="flow-Shares_removeRedeemHandler-step-1" ];
+
+    "Shares.setFeeHandler" -> "Shares.getFeeHandler" [ color="#FF9797", fontcolor="#FFD700", label="set FeeHandler", id="flow-Shares_setFeeHandler-step-1" ];
+
+    "Shares.setSharesTransferValidator" -> "Shares.getSharesTransferValidator" [ color="#FF9797", fontcolor="#FFD700", label="set SharesTransferValidator", id="flow-Shares_setSharesTransferValidator-step-1" ];
+
+    "Shares.setValuationHandler" -> "Shares.getValuationHandler" [ color="#FF9797", fontcolor="#FFD700", label="set ValuationHandler", id="flow-Shares_setValuationHandler-step-1" ];
+
+    "Shares.sharePrice" -> "ValuationHandler.getSharePrice" [ color="#007bff", fontcolor="#FFD700", label="Get share price", id="flow-Shares_sharePrice-step-1" ];
+
+    "Shares.shareValue" -> "ValuationHandler.getShareValue" [ color="#007bff", fontcolor="#FFD700", label="Get share value", id="flow-Shares_shareValue-step-1" ];
+
+    //================================================================
+    // 3. ValuationHandlerBeaconFactory Contract
+    subgraph cluster_ValuationHandlerBeaconFactory {
+        graph [ label = "ValuationHandlerBeaconFactory", color = "#445773", fontcolor = "#f0f0f0", style="rounded", bgcolor="#445773" ];
+
+        subgraph cluster_ValuationHandlerBeaconFactoryStorage {
+            graph [ label = "Storage", color = "#e8726d", fontcolor = "#f0f0f0", style = "rounded,dashed", bgcolor = "#3b4b63" ];
+            "ValuationHandlerBeaconFactory.implementation"[ label = "implementation", color="#007bff", fillcolor="#007bff" ]
+            "ValuationHandlerBeaconFactory.GLOBAL"[ label = "GLOBAL", color="#007bff", fillcolor="#007bff" ]
+            "ValuationHandlerBeaconFactory.instanceToShares"[ label = "instanceToShares"]
+        }
+        "ValuationHandlerBeaconFactory.constructor"[ label = "constructor", color="#28a745"]
+        "ValuationHandlerBeaconFactory.setImplementation"[ label = "setImplementation", color="#28a745", fillcolor="#FF9797" ]
+        "ValuationHandlerBeaconFactory.deployProxy"[ label = "deployProxy", color="#FF9797", fillcolor="#FF9797" ]
+        "ValuationHandlerBeaconFactory.getSharesForInstance"[ label = "getSharesForInstance", color="#007bff", fillcolor="#007bff" ]
+    }
+
+    //  ValuationHandlerBeaconFactory Contract Edges
+
+    "ValuationHandlerBeaconFactory.constructor" -> "Global.owner" [ color="#007bff", fontcolor="#FFD700", label="1. Get global Admin Address", id="flow-ValuationHandlerBeaconFactory_constructor-step-1", lhead=cluster_Global ];
+    "ValuationHandlerBeaconFactory.constructor" -> "ValuationHandlerBeaconFactory.GLOBAL" [ color="#FF9797", fontcolor="#FFD700", label="2. Sets GLOBAL Admin", id="flow-ValuationHandlerBeaconFactory_constructor-step-2", ];
+
+    "ValuationHandlerBeaconFactory.setImplementation" -> "ValuationHandlerBeaconFactory.implementation" [ color="#FF9797", fontcolor="#FFD700", label="Sets Implimentation", id="flow-ValuationHandlerBeaconFactory_setImplementation-step-1" ];
+
+    "ValuationHandlerBeaconFactory.deployProxy" -> "ValuationHandler.constructor" [ color="#FF9797", fontcolor="#FFD700", label="Deploy an Instance of Shares", id="flow-ValuationHandlerBeaconFactory_deployProxy-step-1"];
+    "ValuationHandlerBeaconFactory.deployProxy" -> "ValuationHandlerBeaconFactory.instanceToShares" [ color="#FF9797", fontcolor="#FFD700", label="Record Instance Shares creation", id="flow-ValuationHandlerBeaconFactory_deployProxy-step-2" ];
+
+    "ValuationHandlerBeaconFactory.getSharesForInstance" -> "ValuationHandlerBeaconFactory.instanceToShares" [ color="#007bff", fontcolor="#FFD700", label="Get Shares Address For ValuationHandler Instance", id="flow-ValuationHandlerBeaconFactory_getSharesForInstance-step-1" ];
+
+    //================================================================
+    // 4. ValuationHandler Contract
+    subgraph cluster_ValuationHandler {
+        graph [ label = "ValuationHandler", color = "#445773", fontcolor = "#f0f0f0", style="rounded", bgcolor="#445773" ];
+
+        subgraph cluster_ValuationHandlerStorage {
+            graph [ label = "Storage", color = "#e8726d", fontcolor = "#f0f0f0", style = "rounded,dashed", bgcolor = "#3b4b63" ];
+            "ValuationHandler.SHARES"[ label = "SHARES", color="#007bff", fillcolor="#007bff" ]
+            "ValuationHandler.RATE_PRECISION"[ label = "RATE_PRECISION", color="#28a745", fillcolor="#28a745" ]
+            "ValuationHandler.VALUATION_HANDLER_STORAGE_LOCATION"[ label = "VALUATION_HANDLER_STORAGE_LOCATION", color="#28a745", fillcolor="#28a745" ]
+            "ValuationHandler.VALUATION_HANDLER_STORAGE_LOCATION_ID"[ label = "VALUATION_HANDLER_STORAGE_LOCATION_ID", color="#28a745", fillcolor="#28a745" ]
+            "ValuationHandler.isPositionTracker"[ label = "isPositionTracker", color="#007bff", fillcolor="#007bff" ]
+            "ValuationHandler.getDefaultSharePrice"[ label = "getDefaultSharePrice", color="#007bff", fillcolor="#007bff" ]
+            "ValuationHandler.getAssetRateInfo"[ label = "getAssetRateInfo", color="#007bff", fillcolor="#007bff" ]
+            "ValuationHandler.getPositionTrackers"[ label = "getPositionTrackers", color="#007bff", fillcolor="#007bff" ]
+            }
+
+        "ValuationHandler.constructor"[ label = "constructor"]
+        "ValuationHandler.receive"[ label = "receive", color="#FF9797", fillcolor="#FF9797" ]
+        "ValuationHandler.addPositionTracker"[ label = "addPositionTracker", color="#28a745", fillcolor="#FF9797" ]
+        "ValuationHandler.removePositionTracker"[ label = "removePositionTracker", color="#28a745", fillcolor="#FF9797" ]
+        "ValuationHandler.convertAssetAmountToValue"[ label = "convertAssetAmountToValue", color="#007bff", fillcolor="#007bff" ]
+        "ValuationHandler.convertValueToAssetAmount"[ label = "convertValueToAssetAmount", color="#007bff", fillcolor="#007bff" ]
+        "ValuationHandler.getShareValue"[ label = "getShareValue", color="#007bff", fillcolor="#007bff" ]
+        "ValuationHandler.getSharePrice"[ label = "getSharePrice", color="#007bff", fillcolor="#007bff" ]
+        "ValuationHandler.setAssetRate"[ label = "setAssetRate", color="#28a745", fillcolor="#FF9797" ]
+        "ValuationHandler.setAssetRatesThenUpdateShareValue"[ label = "setAssetRatesThenUpdateShareValue", color="#28a745", fillcolor="#FF9797" ]
+        "ValuationHandler.updateShareValue"[ label = "updateShareValue", color="#28a745", fillcolor="#FF9797" ]
+    }
+
+    // ValuationHandler Edges
+
+    "ValuationHandler.addPositionTracker" -> "ValuationHandler.getPositionTrackers" [ color="#FF9797", fontcolor="#FFD700", label="add PositionTracker", id="flow-ValuationHandler_addPositionTracker-step-1" ];
+
+    "ValuationHandler.removePositionTracker" -> "ValuationHandler.getPositionTrackers" [ color="#FF9797", fontcolor="#FFD700", label="remove PositionTracker", id="flow-ValuationHandler_removePositionTracker-step-1" ];
+
+    //================================================================
+    // 5. FeeHandlerBeaconFactory Contract
+    subgraph cluster_FeeHandlerBeaconFactory {
+        graph [ label = "FeeHandlerBeaconFactory", color = "#445773", fontcolor = "#f0f0f0", style="rounded", bgcolor="#445773" ];
+
+        subgraph cluster_BeaconFactoryStorage {
+            graph [ label = "Storage", color = "#e8726d", fontcolor = "#f0f0f0", style = "rounded,dashed", bgcolor = "#3b4b63" ];
+            "FeeHandlerBeaconFactory.implementation"[ label = "implementation", color="#007bff", fillcolor="#007bff" ]
+            "FeeHandlerBeaconFactory.GLOBAL"[ label = "GLOBAL", color="#007bff", fillcolor="#007bff" ]
+            "FeeHandlerBeaconFactory.instanceToShares"[ label = "instanceToShares"]
+        }
+        "FeeHandlerBeaconFactory.constructor"[ label = "constructor", color="#007bff"]
+        "FeeHandlerBeaconFactory.setImplementation"[ label = "setImplementation", color="#FF9797", fillcolor="#FF9797" ]
+        "FeeHandlerBeaconFactory.deployProxy"[ label = "deployProxy", color="#FF9797", fillcolor="#FF9797" ]
+        "FeeHandlerBeaconFactory.getSharesForInstance"[ label = "getSharesForInstance", color="#007bff", fillcolor="#007bff" ]
+    }
+    // FeeHandlerBeaconFactory Contract Edges
+
+    "FeeHandlerBeaconFactory.constructor" -> "Global.owner" [ color="#007bff", fontcolor="#FFD700", label="1. Get global Admin Address", id="flow-FeeHandlerBeaconFactory_constructor-step-1", lhead=cluster_Global ];
+    "FeeHandlerBeaconFactory.constructor" -> "FeeHandlerBeaconFactory.GLOBAL" [ color="#FF9797", fontcolor="#FFD700", label="2. Sets GLOBAL Admin", id="flow-FeeHandlerBeaconFactory_constructor-step-2" ];
+
+    "FeeHandlerBeaconFactory.setImplementation" -> "FeeHandlerBeaconFactory.implementation" [ color="#FF9797", fontcolor="#FFD700", label="Sets Implimentation", id="flow-FeeHandlerBeaconFactory_setImplementation-step-1" ];
+
+    "FeeHandlerBeaconFactory.deployProxy" -> "FeeHandler.constructor" [ color="#FF9797", fontcolor="#FFD700", label="Deploy an Instance of Shares", id="flow-FeeHandlerBeaconFactory_deployProxy-step-1" ];
+    "FeeHandlerBeaconFactory.deployProxy" -> "FeeHandlerBeaconFactory.instanceToShares" [ color="#FF9797", fontcolor="#FFD700", label="Record Instance Shares creation", id="flow-FeeHandlerBeaconFactory_deployProxy-step-2" ];
+
+    "FeeHandlerBeaconFactory.getSharesForInstance" -> "FeeHandlerBeaconFactory.instanceToShares" [ color="#007bff", fontcolor="#007bff", label="Get Shares Address For FeeHandler Instance", id="flow-FeeHandlerBeaconFactory_getSharesForInstance-step-1" ];
+
+    //================================================================
+    // 6. FeeHandler Contract
+    subgraph cluster_FeeHandler {
+        graph [ label = "FeeHandler", color = "#445773", fontcolor = "#f0f0f0", style="rounded", bgcolor="#445773" ];
+
+        subgraph cluster_FeeHandlerStorage {
+            graph [ label = "Storage", color = "#e8726d", fontcolor = "#f0f0f0", style = "rounded,dashed", bgcolor = "#3b4b63" ];
+            "FeeHandler.SHARES"[ label = "SHARES", color="#007bff", fillcolor="#007bff" ]
+            "FeeHandler.getEntranceFeeBps"[ label = "getEntranceFeeBps", color="#007bff", fillcolor="#007bff" ]
+            "FeeHandler.getEntranceFeeRecipient"[ label = "getEntranceFeeRecipient", color="#007bff", fillcolor="#007bff" ]
+            "FeeHandler.getExitFeeBps"[ label = "getExitFeeBps", color="#007bff", fillcolor="#007bff" ]
+            "FeeHandler.getExitFeeRecipient"[ label = "getExitFeeRecipient", color="#007bff", fillcolor="#007bff" ]
+            "FeeHandler.getFeeAsset"[ label = "getFeeAsset", color="#007bff", fillcolor="#007bff" ]
+            "FeeHandler.getManagementFeeRecipient"[ label = "getManagementFeeRecipient", color="#007bff", fillcolor="#007bff" ]
+            "FeeHandler.getManagementFeeTracker"[ label = "getManagementFeeTracker", color="#007bff", fillcolor="#007bff" ]
+            "FeeHandler.getPerformanceFeeRecipient"[ label = "getPerformanceFeeRecipient", color="#007bff", fillcolor="#007bff" ]
+            "FeeHandler.getPerformanceFeeTracker"[ label = "getPerformanceFeeTracker", color="#007bff", fillcolor="#007bff" ]
+            "FeeHandler.getTotalValueOwed"[ label = "getTotalValueOwed", color="#007bff", fillcolor="#007bff" ]
+            "FeeHandler.getValueOwedToUser"[ label = "getValueOwedToUser", color="#007bff", fillcolor="#007bff" ]
+            }
+
+        "FeeHandler.constructor"[ label = "constructor"]
+        "FeeHandler.recieve"[ label = "recieve", color="#FF9797", fillcolor="#FF9797" ]
+        "FeeHandler.setEntranceFee"[ label = "setEntranceFee", color="#28a745", fillcolor="#FF9797" ]
+        "FeeHandler.setExitFee"[ label = "setExitFee", color="#28a745", fillcolor="#FF9797" ]
+        "FeeHandler.setFeeAsset"[ label = "setFeeAsset", color="#28a745", fillcolor="#FF9797" ]
+        "FeeHandler.setManagementFee"[ label = "setManagementFee", color="#28a745", fillcolor="#FF9797" ]
+        "FeeHandler.setPerformanceFee"[ label = "setPerformanceFee", color="#28a745", fillcolor="#FF9797" ]
+        "FeeHandler.claimFees"[ label = "claimFees", color="#28a745", fillcolor="#FF9797" ]
+        "FeeHandler.settleDynamicFeesGivenPositionsValue"[ label = "settleDynamicFeesGivenPositionsValue", color="#FF9797", fillcolor="#FF9797" ]
+        "FeeHandler.settleEntranceFeeGivenGrossShares"[ label = "settleEntranceFeeGivenGrossShares", color="#FF9797", fillcolor="#FF9797" ]
+        "FeeHandler.settleExitFeeGivenGrossShares"[ label = "settleExitFeeGivenGrossShares", color="#FF9797", fillcolor="#FF9797" ]
+    }
+
+    //================================================================
+    // 7. ERC7540LikeDepositQueueBeaconFactory Contract
+    subgraph cluster_ERC7540LikeDepositQueueFactory {
+        graph [ label = "ERC7540LikeDepositQueueBeaconFactory", color = "#445773", fontcolor = "#f0f0f0", style="rounded", bgcolor="#445773" ];
+
+        subgraph cluster_BeaconFactoryStorage {
+            graph [ label = "Storage", color = "#e8726d", fontcolor = "#f0f0f0", style = "rounded,dashed", bgcolor = "#3b4b63" ];
+            "ERC7540LikeDepositQueueBeaconFactory.implementation"[ label = "implementation", color="#007bff", fillcolor="#007bff" ]
+            "ERC7540LikeDepositQueueBeaconFactory.GLOBAL"[ label = "GLOBAL", color="#007bff", fillcolor="#007bff" ]
+            "ERC7540LikeDepositQueueBeaconFactory.instanceToShares"[ label = "instanceToShares"]
+        }
+        "ERC7540LikeDepositQueueBeaconFactory.constructor"[ label = "constructor", color="#007bff"]
+        "ERC7540LikeDepositQueueBeaconFactory.setImplementation"[ label = "setImplementation", color="#FF9797", fillcolor="#FF9797" ]
+        "ERC7540LikeDepositQueueBeaconFactory.deployProxy"[ label = "deployProxy", color="#FF9797", fillcolor="#FF9797" ]
+        "ERC7540LikeDepositQueueBeaconFactory.getSharesForInstance"[ label = "getSharesForInstance", color="#007bff", fillcolor="#007bff" ]
+    }
+    // ERC7540LikeDepositQueueBeaconFactory Contract Edges
+    "ERC7540LikeDepositQueueBeaconFactory.constructor" -> "Global.owner" [ color="#007bff", fontcolor="#FFD700", label="1. Get global Admin Address", id="flow-ERC7540LikeDepositQueueBeaconFactory_constructor-step-1", lhead=cluster_Global ];
+    "ERC7540LikeDepositQueueBeaconFactory.constructor" -> "ERC7540LikeDepositQueueBeaconFactory.GLOBAL" [ color="#FF9797", fontcolor="#FFD700", label="2. Sets GLOBAL Admin", id="flow-ERC7540LikeDepositQueueBeaconFactory_constructor-step-2" ];
+
+    "ERC7540LikeDepositQueueBeaconFactory.setImplementation" -> "ERC7540LikeDepositQueueBeaconFactory.implementation" [ color="#FF9797", fontcolor="#FFD700", label="Sets Implimentation", id="flow-ERC7540LikeDepositQueueBeaconFactory_setImplementation-step-1" ];
+
+    "ERC7540LikeDepositQueueBeaconFactory.deployProxy" -> "ERC7540LikeDepositQueue.constructor" [ color="#FF9797", fontcolor="#FFD700", label="Deploy an Instance of Shares", id="flow-ERC7540LikeDepositQueueBeaconFactory_deployProxy-step-1" ];
+    "ERC7540LikeDepositQueueBeaconFactory.deployProxy" -> "ERC7540LikeDepositQueueBeaconFactory.instanceToShares" [ color="#FF9797", fontcolor="#FFD700", label="Record Instance Shares creation", id="flow-ERC7540LikeDepositQueueBeaconFactory_deployProxy-step-2" ];
+
+    "ERC7540LikeDepositQueueBeaconFactory.getSharesForInstance" -> "ERC7540LikeDepositQueueBeaconFactory.instanceToShares" [ color="#007bff", fontcolor="#007bff", label="Get Shares Address For ERC7540LikeDepositQueue Instance", id="flow-ERC7540LikeDepositQueueBeaconFactory_getSharesForInstance-step-1" ];
+
+    //================================================================
+    // 8. ERC7540LikeDepositQueue Contract
+    subgraph cluster_ERC7540LikeDepositQueue {
+        graph [ label = "ERC7540LikeDepositQueue", color = "#445773", fontcolor = "#f0f0f0", style="rounded", bgcolor="#445773" ];
+
+        subgraph cluster_ERC7540LikeDepositQueueStorage {
+            graph [ label = "Storage", color = "#e8726d", fontcolor = "#f0f0f0", style = "rounded,dashed", bgcolor = "#3b4b63" ];
+
+            "ERC7540LikeDepositQueue.getDepositLastId"[ label = "getDepositLastId", color="#007bff", fillcolor="#007bff" ]
+            "ERC7540LikeDepositQueue.getDepositMinRequestDuration"[ label = "getDepositMinRequestDuration", color="#007bff", fillcolor="#007bff" ]
+            "ERC7540LikeDepositQueue.getDepositRequest"[ label = "getDepositRequest", color="#007bff", fillcolor="#007bff" ]
+            "ERC7540LikeDepositQueue.getDepositRestriction"[ label = "getDepositRestriction", color="#007bff", fillcolor="#007bff" ]
+            "ERC7540LikeDepositQueue.isInAllowedControllerList"[ label = "isInAllowedControllerList", color="#007bff", fillcolor="#007bff" ]
+            "ERC7540LikeDepositQueue.asset"[ label = "asset", color="#007bff", fillcolor="#007bff" ]
+            "ERC7540LikeDepositQueue.share"[ label = "share", color="#007bff", fillcolor="#007bff" ]
+            "ERC7540LikeDepositQueue.SHARES"[ label = "SHARES", color="#007bff", fillcolor="#007bff" ]
+            }
+
+        "ERC7540LikeDepositQueue.setAsset"[ label = "setAsset", color="#28a745", fillcolor="#FF9797" ]
+        "ERC7540LikeDepositQueue.constructor"[ label = "constructor", color="#007bff", fillcolor="#007bff" ]
+        "ERC7540LikeDepositQueue.recieve"[ label = "recieve", color="#FF9797", fillcolor="#FF9797" ]
+        "ERC7540LikeDepositQueue.addAllowedController"[ label = "addAllowedController", color="#28a745", fillcolor="#FF9797" ]
+        "ERC7540LikeDepositQueue.removeAllowedController"[ label = "removeAllowedController", color="#28a745", fillcolor="#FF9797" ]
+        "ERC7540LikeDepositQueue.setDepositRestriction"[ label = "setDepositRestriction", color="#28a745", fillcolor="#FF9797" ]
+        "ERC7540LikeDepositQueue.setDepositMinRequestDuration"[ label = "setDepositMinRequestDuration", color="#28a745", fillcolor="#FF9797" ]
+        "ERC7540LikeDepositQueue.requestDeposit"[ label = "requestDeposit", color="#FF9797", fillcolor="#FF9797" ]
+        "ERC7540LikeDepositQueue.cancelDeposit"[ label = "cancelDeposit", color="#FF9797", fillcolor="#FF9797" ]
+        "ERC7540LikeDepositQueue.executeDepositRequests"[ label = "executeDepositRequests", color="#28a745", fillcolor="#FF9797" ]
+        "ERC7540LikeDepositQueue.requestDepositReferred"[ label = "requestDepositReferred", color="#FF9797", fillcolor="#FF9797" ]
+    }
+
+    //  ERC7540LikeDepositQueue Edges
+
+
+    //================================================================
+    // 9. ERC7540LikeRedeemQueueBeaconFactory Contract
+    subgraph cluster_ERC7540LikeRedeemQueueBeaconFactory {
+        graph [ label = "ERC7540LikeRedeemQueueBeaconFactory", color = "#445773", fontcolor = "#f0f0f0", style="rounded", bgcolor="#445773" ];
+
+        subgraph cluster_BeaconFactoryStorage {
+            graph [ label = "Storage", color = "#e8726d", fontcolor = "#f0f0f0", style = "rounded,dashed", bgcolor = "#3b4b63" ];
+            "ERC7540LikeRedeemQueueBeaconFactory.implementation"[ label = "implementation", color="#007bff", fillcolor="#007bff" ]
+            "ERC7540LikeRedeemQueueBeaconFactory.GLOBAL"[ label = "GLOBAL", color="#007bff", fillcolor="#007bff" ]
+            "ERC7540LikeRedeemQueueBeaconFactory.instanceToShares"[ label = "instanceToShares"]
+        }
+        "ERC7540LikeRedeemQueueBeaconFactory.constructor"[ label = "constructor", color="#007bff"]
+        "ERC7540LikeRedeemQueueBeaconFactory.setImplementation"[ label = "setImplementation", color="#FF9797", fillcolor="#FF9797" ]
+        "ERC7540LikeRedeemQueueBeaconFactory.deployProxy"[ label = "deployProxy", color="#FF9797", fillcolor="#FF9797" ]
+        "ERC7540LikeRedeemQueueBeaconFactory.getSharesForInstance"[ label = "getSharesForInstance", color="#007bff", fillcolor="#007bff" ]
+    }
+
+    // ERC7540LikeRedeemQueueBeaconFactory Contract Edges
+
+    "ERC7540LikeRedeemQueueBeaconFactory.constructor" -> "Global.owner" [ color="#007bff", fontcolor="#FFD700", label="1. Get global Admin Address", id="flow-ERC7540LikeRedeemQueueBeaconFactory_constructor-step-1", lhead=cluster_Global ];
+    "ERC7540LikeRedeemQueueBeaconFactory.constructor" -> "ERC7540LikeRedeemQueueBeaconFactory.GLOBAL" [ color="#FF9797", fontcolor="#FFD700", label="2. Sets GLOBAL Admin", id="flow-ERC7540LikeRedeemQueueBeaconFactory_constructor-step-2" ];
+
+    "ERC7540LikeRedeemQueueBeaconFactory.setImplementation" -> "ERC7540LikeRedeemQueueBeaconFactory.implementation" [ color="#FF9797", fontcolor="#FFD700", label="Sets Implimentation", id="flow-ERC7540LikeRedeemQueueBeaconFactory_setImplementation-step-1" ];
+
+    "ERC7540LikeRedeemQueueBeaconFactory.deployProxy" -> "ERC7540LikeRedeemQueue.constructor" [ color="#FF9797", fontcolor="#FFD700", label="Deploy an Instance of Shares", id="flow-ERC7540LikeRedeemQueueBeaconFactory_deployProxy-step-1" ];
+    "ERC7540LikeRedeemQueueBeaconFactory.deployProxy" -> "ERC7540LikeRedeemQueueBeaconFactory.instanceToShares" [ color="#FF9797", fontcolor="#FFD700", label="Record Instance Shares creation", id="flow-ERC7540LikeRedeemQueueBeaconFactory_deployProxy-step-2" ];
+
+    "ERC7540LikeRedeemQueueBeaconFactory.getSharesForInstance" -> "ERC7540LikeRedeemQueueBeaconFactory.instanceToShares" [ color="#007bff", fontcolor="#007bff", label="Get Shares Address For ERC7540LikeRedeemQueue Instance", id="flow-ERC7540LikeRedeemQueueBeaconFactory_getSharesForInstance-step-1" ];
+
+    //================================================================
+    // 10. ERC7540LikeRedeemQueue Contract
+
+    subgraph cluster_ERC7540LikeRedeemQueue {
+        graph [ label = "ERC7540LikeRedeemQueue", color = "#445773", fontcolor = "#f0f0f0", style="rounded", bgcolor="#445773" ];
+
+        subgraph cluster_ERC7540LikeRedeemQueueStorage {
+            graph [ label = "Storage", color = "#e8726d", fontcolor = "#f0f0f0", style = "rounded,dashed", bgcolor = "#3b4b63" ];
+            "ERC7540LikeRedeemQueue.SHARES"[ label = "SHARES", color="#007bff", fillcolor="#007bff" ]
+            "ERC7540LikeRedeemQueue.asset"[ label = "asset", color="#007bff", fillcolor="#007bff" ]
+            "ERC7540LikeRedeemQueue.share"[ label = "share", color="#007bff", fillcolor="#007bff" ]
+            "ERC7540LikeRedeemQueue.getRedeemLastId"[ label = "getRedeemLastId", color="#007bff", fillcolor="#007bff" ]
+            "ERC7540LikeRedeemQueue.getRedeemMinRequestDuration"[ label = "getRedeemMinRequestDuration", color="#007bff", fillcolor="#007bff" ]
+            "ERC7540LikeRedeemQueue.getRedeemRequest"[ label = "getRedeemRequest", color="#007bff", fillcolor="#007bff" ]
+            }
+
+        "ERC7540LikeRedeemQueue.setAsset"[ label = "setAsset", color="#28a745", fillcolor="#FF9797" ]
+        "ERC7540LikeRedeemQueue.constructor"[ label = "constructor", color="#007bff", fillcolor="#007bff" ]
+        "ERC7540LikeRedeemQueue.recieve"[ label = "recieve", color="#FF9797", fillcolor="#FF9797" ]
+        "ERC7540LikeRedeemQueue.setRedeemMinRequestDuration"[ label = "setRedeemMinRequestDuration", color="#28a745", fillcolor="#FF9797" ]
+        "ERC7540LikeRedeemQueue.cancelRedeem"[ label = "cancelRedeem", color="#FF9797", fillcolor="#FF9797" ]
+        "ERC7540LikeRedeemQueue.executeRedeemRequests"[ label = "executeRedeemRequests", color="#28a745", fillcolor="#FF9797" ]
+        "ERC7540LikeRedeemQueue.requestRedeem"[ label = "requestRedeem", color="#FF9797", fillcolor="#FF9797" ]
+    }
+
+    //================================================================
+    // 11. ContinuousFlatRateManagementFeeTrackerBeaconFactory Contract
+
+    subgraph cluster_ContinuousFlatRateManagementFeeTrackerBeaconFactory {
+        graph [ label = "ContinuousFlatRateManagementFeeTrackerBeaconFactory", color = "#445773", fontcolor = "#f0f0f0", style="rounded", bgcolor="#445773" ];
+
+        subgraph cluster_BeaconFactoryStorage {
+            graph [ label = "Storage", color = "#e8726d", fontcolor = "#f0f0f0", style = "rounded,dashed", bgcolor = "#3b4b63" ];
+            "ContinuousFlatRateManagementFeeTrackerBeaconFactory.implementation"[ label = "implementation", color="#007bff", fillcolor="#007bff" ]
+            "ContinuousFlatRateManagementFeeTrackerBeaconFactory.GLOBAL"[ label = "GLOBAL", color="#007bff", fillcolor="#007bff" ]
+            "ContinuousFlatRateManagementFeeTrackerBeaconFactory.instanceToShares"[ label = "instanceToShares"]
+        }
+        "ContinuousFlatRateManagementFeeTrackerBeaconFactory.constructor"[ label = "constructor", color="#007bff"]
+        "ContinuousFlatRateManagementFeeTrackerBeaconFactory.setImplementation"[ label = "setImplementation", color="#FF9797", fillcolor="#FF9797" ]
+        "ContinuousFlatRateManagementFeeTrackerBeaconFactory.deployProxy"[ label = "deployProxy", color="#FF9797", fillcolor="#FF9797" ]
+        "ContinuousFlatRateManagementFeeTrackerBeaconFactory.getSharesForInstance"[ label = "getSharesForInstance", color="#007bff", fillcolor="#007bff" ]
+    }
+    // ContinuousFlatRateManagementFeeTrackerBeaconFactory Contract Edges
+
+    "ContinuousFlatRateManagementFeeTrackerBeaconFactory.constructor" -> "Global.owner" [ color="#007bff", fontcolor="#FFD700", label="1. Get global Admin Address", id="flow-ContinuousFlatRateManagementFeeTrackerBeaconFactory_constructor-step-1", lhead=cluster_Global ];
+    "ContinuousFlatRateManagementFeeTrackerBeaconFactory.constructor" -> "ContinuousFlatRateManagementFeeTrackerBeaconFactory.GLOBAL" [ color="#FF9797", fontcolor="#FFD700", label="2. Sets GLOBAL Admin", id="flow-ContinuousFlatRateManagementFeeTrackerBeaconFactory_constructor-step-2" ];
+
+    "ContinuousFlatRateManagementFeeTrackerBeaconFactory.setImplementation" -> "ContinuousFlatRateManagementFeeTrackerBeaconFactory.implementation" [ color="#FF9797", fontcolor="#FFD700", label="Sets Implimentation", id="flow-ContinuousFlatRateManagementFeeTrackerBeaconFactory_setImplementation-step-1" ];
+
+    "ContinuousFlatRateManagementFeeTrackerBeaconFactory.deployProxy" -> "ContinuousFlatRateManagementFeeTracker.constructor" [ color="#FF9797", fontcolor="#FFD700", label="Deploy an Instance of Shares", id="flow-ContinuousFlatRateManagementFeeTrackerBeaconFactory_deployProxy-step-1" ];
+    "ContinuousFlatRateManagementFeeTrackerBeaconFactory.deployProxy" -> "ContinuousFlatRateManagementFeeTrackerBeaconFactory.instanceToShares" [ color="#FF9797", fontcolor="#FFD700", label="Record Instance Shares creation", id="flow-ContinuousFlatRateManagementFeeTrackerBeaconFactory_deployProxy-step-2" ];
+
+    "ContinuousFlatRateManagementFeeTrackerBeaconFactory.getSharesForInstance" -> "ContinuousFlatRateManagementFeeTrackerBeaconFactory.instanceToShares" [ color="#007bff", fontcolor="#007bff", label="Get Shares Address For ContinuousFlatRateManagementFeeTracker Instance", id="flow-ContinuousFlatRateManagementFeeTrackerBeaconFactory_getSharesForInstance-step-1" ];
+
+    //================================================================
+    // 12. ContinuousFlatRateManagementFeeTracker Contract
+
+    subgraph cluster_ContinuousFlatRateManagementFeeTracker {
+        graph [ label = "ContinuousFlatRateManagementFeeTracker", color = "#445773", fontcolor = "#f0f0f0", style="rounded", bgcolor="#445773" ];
+
+        subgraph cluster_ContinuousFlatRateManagementFeeTrackerStorage {
+            graph [ label = "Storage", color = "#e8726d", fontcolor = "#f0f0f0", style = "rounded,dashed", bgcolor = "#3b4b63" ];
+            "ContinuousFlatRateManagementFeeTracker.SHARES"[ label = "SHARES", color="#007bff", fillcolor="#007bff" ]
+            "ContinuousFlatRateManagementFeeTracker.getLastSettled"[ label = "getLastSettled", color="#007bff", fillcolor="#007bff" ]
+            "ContinuousFlatRateManagementFeeTracker.getRate"[ label = "getRate", color="#007bff", fillcolor="#007bff" ]
+            }
+        "ContinuousFlatRateManagementFeeTracker.constructor"[ label = "constructor", color="#007bff", fillcolor="#007bff" ]
+        "ContinuousFlatRateManagementFeeTracker.receive"[ label = "receive", color="#007bff", fillcolor="#007bff" ]
+        "ContinuousFlatRateManagementFeeTracker.resetLastSettled"[ label = "resetLastSettled", color="#28a745", fillcolor="#FF9797" ]
+        "ContinuousFlatRateManagementFeeTracker.setRate"[ label = "setRate", color="#28a745", fillcolor="#FF9797" ]
+        "ContinuousFlatRateManagementFeeTracker.settleManagementFee"[ label = "settleManagementFee", color="#FF9797", fillcolor="#FF9797" ]
+    }
+
+
+    //================================================================
+    // 13. OpenAccessLimitedCallForwarderBeaconFactory Contract
+    subgraph cluster_OpenAccessLimitedCallForwarderBeaconFactory {
+        graph [ label = "OpenAccessLimitedCallForwarderBeaconFactory", color = "#445773", fontcolor = "#f0f0f0", style="rounded", bgcolor="#445773" ];
+
+        subgraph cluster_BeaconFactoryStorage {
+            graph [ label = "Storage", color = "#e8726d", fontcolor = "#f0f0f0", style = "rounded,dashed", bgcolor = "#3b4b63" ];
+            "OpenAccessLimitedCallForwarderBeaconFactory.implementation"[ label = "implementation", color="#007bff", fillcolor="#007bff" ]
+            "OpenAccessLimitedCallForwarderBeaconFactory.GLOBAL"[ label = "GLOBAL", color="#007bff", fillcolor="#007bff" ]
+            "OpenAccessLimitedCallForwarderBeaconFactory.instanceToShares"[ label = "instanceToShares"]
+        }
+        "OpenAccessLimitedCallForwarderBeaconFactory.constructor"[ label = "constructor", color="#007bff"]
+        "OpenAccessLimitedCallForwarderBeaconFactory.setImplementation"[ label = "setImplementation", color="#FF9797", fillcolor="#FF9797" ]
+        "OpenAccessLimitedCallForwarderBeaconFactory.deployProxy"[ label = "deployProxy", color="#FF9797", fillcolor="#FF9797" ]
+        "OpenAccessLimitedCallForwarderBeaconFactory.getSharesForInstance"[ label = "getSharesForInstance", color="#007bff", fillcolor="#007bff" ]
+    }
+
+    // OpenAccessLimitedCallForwarderBeaconFactory Contract Edges
+
+    "OpenAccessLimitedCallForwarderBeaconFactory.constructor" -> "Global.owner" [ color="#007bff", fontcolor="#FFD700", label="1. Get global Admin Address", id="flow-OpenAccessLimitedCallForwarderBeaconFactory_constructor-step-1", lhead=cluster_Global ];
+    "OpenAccessLimitedCallForwarderBeaconFactory.constructor" -> "OpenAccessLimitedCallForwarderBeaconFactory.GLOBAL" [ color="#FF9797", fontcolor="#FFD700", label="2. Sets GLOBAL Admin", id="flow-OpenAccessLimitedCallForwarderBeaconFactory_constructor-step-2" ];
+
+    "OpenAccessLimitedCallForwarderBeaconFactory.setImplementation" -> "OpenAccessLimitedCallForwarderBeaconFactory.implementation" [ color="#FF9797", fontcolor="#FFD700", label="Sets Implimentation", id="flow-OpenAccessLimitedCallForwarderBeaconFactory_setImplementation-step-1" ];
+
+    "OpenAccessLimitedCallForwarderBeaconFactory.deployProxy" -> "OpenAccessLimitedCallForwarder.constructor" [ color="#FF9797", fontcolor="#FFD700", label="Deploy an Instance of Shares", id="flow-OpenAccessLimitedCallForwarderBeaconFactory_deployProxy-step-1" ];
+    "OpenAccessLimitedCallForwarderBeaconFactory.deployProxy" -> "OpenAccessLimitedCallForwarderBeaconFactory.instanceToShares" [ color="#FF9797", fontcolor="#FFD700", label="Record Instance Shares creation", id="flow-OpenAccessLimitedCallForwarderBeaconFactory_deployProxy-step-2" ];
+
+    "OpenAccessLimitedCallForwarderBeaconFactory.getSharesForInstance" -> "OpenAccessLimitedCallForwarderBeaconFactory.instanceToShares" [ color="#007bff", fontcolor="#007bff", label="Get Shares Address For OpenAccessLimitedCallForwarder Instance", id="flow-OpenAccessLimitedCallForwarderBeaconFactory_getSharesForInstance-step-1" ];
+
+    //================================================================
+    // 14. OpenAccessLimitedCallForwarder Contract
+
+    subgraph cluster_OpenAccessLimitedCallForwarder {
+        graph [ label = "OpenAccessLimitedCallForwarder", color = "#445773", fontcolor = "#f0f0f0", style="rounded", bgcolor="#445773" ];
+
+        subgraph cluster_OpenAccessLimitedCallForwarderStorage {
+            graph [ label = "Storage", color = "#e8726d", fontcolor = "#f0f0f0", style = "rounded,dashed", bgcolor = "#3b4b63" ];
+            "OpenAccessLimitedCallForwarder.SHARES"[ label = "SHARES", color="#007bff", fillcolor="#007bff" ]
+            "OpenAccessLimitedCallForwarder.OPEN_ACCESS_LIMITED_CALL_FORWARDER"[ label = "OPEN_ACCESS_LIMITED_CALL_FORWARDER", color="#28a745", fillcolor="#28a745" ]
+            "OpenAccessLimitedCallForwarder.OPEN_ACCESS_LIMITED_CALL_FORWARDER_ID"[ label = "OPEN_ACCESS_LIMITED_CALL_FORWARDER_ID", color="#28a745", fillcolor="#28a745" ]
+            "OpenAccessLimitedCallForwarder.canCall"[ label = "canCall", color="#007bff", fillcolor="#007bff" ]
+            }
+        "OpenAccessLimitedCallForwarder.constructor"[ label = "constructor", color="#007bff", fillcolor="#007bff" ]
+        "OpenAccessLimitedCallForwarder.recieve"[ label = "recieve", color="#FF9797", fillcolor="#FF9797" ]
+        "OpenAccessLimitedCallForwarder.addCall"[ label = "addCall", color="#28a745", fillcolor="#FF9797" ]
+        "OpenAccessLimitedCallForwarder.executeCalls"[ label = "executeCalls", color="#FF9797", fillcolor="#FF9797" ]
+        "OpenAccessLimitedCallForwarder.removeCall"[ label = "removeCall", color="#28a745", fillcolor="#FF9797" ]
+    }
+
+    //================================================================
+    // 15. LimitedAccessLimitedCallForwarderBeaconFactory Contract
+    subgraph cluster_LimitedAccessLimitedCallForwarderBeaconFactory {
+        graph [ label = "LimitedAccessLimitedCallForwarderBeaconFactory", color = "#445773", fontcolor = "#f0f0f0", style="rounded", bgcolor="#445773" ];
+
+        subgraph cluster_BeaconFactoryStorage {
+            graph [ label = "Storage", color = "#e8726d", fontcolor = "#f0f0f0", style = "rounded,dashed", bgcolor = "#3b4b63" ];
+            "LimitedAccessLimitedCallForwarderBeaconFactory.implementation"[ label = "implementation", color="#007bff", fillcolor="#007bff" ]
+            "LimitedAccessLimitedCallForwarderBeaconFactory.GLOBAL"[ label = "GLOBAL", color="#007bff", fillcolor="#007bff" ]
+            "LimitedAccessLimitedCallForwarderBeaconFactory.instanceToShares"[ label = "instanceToShares"]
+        }
+        "LimitedAccessLimitedCallForwarderBeaconFactory.constructor"[ label = "constructor", color="#007bff"]
+        "LimitedAccessLimitedCallForwarderBeaconFactory.setImplementation"[ label = "setImplementation", color="#FF9797", fillcolor="#FF9797" ]
+        "LimitedAccessLimitedCallForwarderBeaconFactory.deployProxy"[ label = "deployProxy", color="#FF9797", fillcolor="#FF9797" ]
+        "LimitedAccessLimitedCallForwarderBeaconFactory.getSharesForInstance"[ label = "getSharesForInstance", color="#007bff", fillcolor="#007bff" ]
+    }
+
+    // LimitedAccessLimitedCallForwarderBeaconFactory Contract Edges
+
+    "LimitedAccessLimitedCallForwarderBeaconFactory.constructor" -> "Global.owner" [ color="#007bff", fontcolor="#FFD700", label="1. Get global Admin Address", id="flow-LimitedAccessLimitedCallForwarderBeaconFactory_constructor-step-1", lhead=cluster_Global ];
+    "LimitedAccessLimitedCallForwarderBeaconFactory.constructor" -> "LimitedAccessLimitedCallForwarderBeaconFactory.GLOBAL" [ color="#FF9797", fontcolor="#FFD700", label="2. Sets GLOBAL Admin", id="flow-LimitedAccessLimitedCallForwarderBeaconFactory_constructor-step-2" ];
+
+    "LimitedAccessLimitedCallForwarderBeaconFactory.setImplementation" -> "LimitedAccessLimitedCallForwarderBeaconFactory.implementation" [ color="#FF9797", fontcolor="#FFD700", label="Sets Implimentation", id="flow-LimitedAccessLimitedCallForwarderBeaconFactory_setImplementation-step-1" ];
+
+    "LimitedAccessLimitedCallForwarderBeaconFactory.deployProxy" -> "LimitedAccessLimitedCallForwarder.constructor" [ color="#FF9797", fontcolor="#FFD700", label="Deploy an Instance of Shares", id="flow-LimitedAccessLimitedCallForwarderBeaconFactory_deployProxy-step-1" ];
+    "LimitedAccessLimitedCallForwarderBeaconFactory.deployProxy" -> "LimitedAccessLimitedCallForwarderBeaconFactory.instanceToShares" [ color="#FF9797", fontcolor="#FFD700", label="Record Instance Shares creation", id="flow-LimitedAccessLimitedCallForwarderBeaconFactory_deployProxy-step-2" ];
+
+    "LimitedAccessLimitedCallForwarderBeaconFactory.getSharesForInstance" -> "LimitedAccessLimitedCallForwarderBeaconFactory.instanceToShares" [ color="#007bff", fontcolor="#007bff", label="Get Shares Address For LimitedAccessLimitedCallForwarder Instance", id="flow-LimitedAccessLimitedCallForwarderBeaconFactory_getSharesForInstance-step-1" ];
+
+    //================================================================
+    // 16. LimitedAccessLimitedCallForwarder Contract
+
+    subgraph cluster_LimitedAccessLimitedCallForwarder {
+        graph [ label = "LimitedAccessLimitedCallForwarder", color = "#445773", fontcolor = "#f0f0f0", style="rounded", bgcolor="#445773" ];
+
+        subgraph cluster_LimitedAccessLimitedCallForwarderStorage {
+            graph [ label = "Storage", color = "#e8726d", fontcolor = "#f0f0f0", style = "rounded,dashed", bgcolor = "#3b4b63" ];
+            "LimitedAccessLimitedCallForwarder.SHARES"[ label = "SHARES", color="#007bff", fillcolor="#007bff" ]
+            "LimitedAccessLimitedCallForwarder.Limited_ACCESS_LIMITED_CALL_FORWARDER"[ label = "Limited_ACCESS_LIMITED_CALL_FORWARDER", color="#28a745", fillcolor="#28a745" ]
+            "LimitedAccessLimitedCallForwarder.Limited_ACCESS_LIMITED_CALL_FORWARDER_ID"[ label = "Limited_ACCESS_LIMITED_CALL_FORWARDER_ID", color="#28a745", fillcolor="#28a745" ]
+            "LimitedAccessLimitedCallForwarder.canCall"[ label = "canCall", color="#007bff", fillcolor="#007bff" ]
+            }
+        "LimitedAccessLimitedCallForwarder.constructor"[ label = "constructor", color="#007bff", fillcolor="#007bff" ]
+        "LimitedAccessLimitedCallForwarder.recieve"[ label = "recieve", color="#FF9797", fillcolor="#FF9797" ]
+        "LimitedAccessLimitedCallForwarder.addCall"[ label = "addCall", color="#28a745", fillcolor="#FF9797" ]
+        "LimitedAccessLimitedCallForwarder.executeCalls"[ label = "executeCalls", color="#FF9797", fillcolor="#FF9797" ]
+        "LimitedAccessLimitedCallForwarder.removeCall"[ label = "removeCall", color="#28a745", fillcolor="#FF9797" ]
+    }
+
+    //================================================================
+    // 17. AccountERC20TrackerBeaconFactory Contract
+    subgraph cluster_AccountERC20TrackerBeaconFactory {
+        graph [ label = "AccountERC20TrackerBeaconFactory", color = "#445773", fontcolor = "#f0f0f0", style="rounded", bgcolor="#445773" ];
+
+        subgraph cluster_BeaconFactoryStorage {
+            graph [ label = "Storage", color = "#e8726d", fontcolor = "#f0f0f0", style = "rounded,dashed", bgcolor = "#3b4b63" ];
+            "AccountERC20TrackerBeaconFactory.implementation"[ label = "implementation", color="#007bff", fillcolor="#007bff" ]
+            "AccountERC20TrackerBeaconFactory.GLOBAL"[ label = "GLOBAL", color="#007bff", fillcolor="#007bff" ]
+            "AccountERC20TrackerBeaconFactory.instanceToShares"[ label = "instanceToShares"]
+        }
+        "AccountERC20TrackerBeaconFactory.constructor"[ label = "constructor", color="#007bff"]
+        "AccountERC20TrackerBeaconFactory.setImplementation"[ label = "setImplementation", color="#FF9797", fillcolor="#FF9797" ]
+        "AccountERC20TrackerBeaconFactory.deployProxy"[ label = "deployProxy", color="#FF9797", fillcolor="#FF9797" ]
+        "AccountERC20TrackerBeaconFactory.getSharesForInstance"[ label = "getSharesForInstance", color="#007bff", fillcolor="#007bff" ]
+    }
+
+    //  AccountERC20TrackerBeaconFactory Contract Edges
+    "AccountERC20TrackerBeaconFactory.constructor" -> "Global.owner" [ color="#007bff", fontcolor="#FFD700", label="1. Get global Admin Address", id="flow-AccountERC20TrackerBeaconFactory_constructor-step-1", lhead=cluster_Global ];
+    "AccountERC20TrackerBeaconFactory.constructor" -> "AccountERC20TrackerBeaconFactory.GLOBAL" [ color="#FF9797", fontcolor="#FFD700", label="2. Sets GLOBAL Admin", id="flow-AccountERC20TrackerBeaconFactory_constructor-step-2" ];
+
+    "AccountERC20TrackerBeaconFactory.setImplementation" -> "AccountERC20TrackerBeaconFactory.implementation" [ color="#FF9797", fontcolor="#FFD700", label="Sets Implimentation", id="flow-AccountERC20TrackerBeaconFactory_setImplementation-step-1" ];
+
+    "AccountERC20TrackerBeaconFactory.deployProxy" -> "AccountERC20Tracker.constructor" [ color="#FF9797", fontcolor="#FFD700", label="Deploy an Instance of Shares", id="flow-AccountERC20TrackerBeaconFactory_deployProxy-step-1" ];
+    "AccountERC20TrackerBeaconFactory.deployProxy" -> "AccountERC20TrackerBeaconFactory.instanceToShares" [ color="#FF9797", fontcolor="#FFD700", label="Record Instance Shares creation", id="flow-AccountERC20TrackerBeaconFactory_deployProxy-step-2" ];
+
+    "AccountERC20TrackerBeaconFactory.getSharesForInstance" -> "AccountERC20TrackerBeaconFactory.instanceToShares" [ color="#007bff", fontcolor="#007bff", label="Get Shares Address For AccountERC20Tracker Instance", id="flow-AccountERC20TrackerBeaconFactory_getSharesForInstance-step-1" ];
+
+
+    //================================================================
+    // 18. AccountERC20Tracker Contract
+
+    subgraph cluster_AccountERC20Tracker {
+        graph [ label = "AccountERC20Tracker", color = "#445773", fontcolor = "#f0f0f0", style="rounded", bgcolor="#445773" ];
+
+        subgraph cluster_AccountERC20TrackerStorage {
+            graph [ label = "Storage", color = "#e8726d", fontcolor = "#f0f0f0", style = "rounded,dashed", bgcolor = "#3b4b63" ];
+            "AccountERC20Tracker.SHARES"[ label = "SHARES", color="#007bff", fillcolor="#007bff" ]
+            "AccountERC20Tracker.getAccount"[ label = "getAccount", color="#007bff", fillcolor="#007bff" ]
+            "AccountERC20Tracker.getAssets"[ label = "getAssets", color="#007bff", fillcolor="#007bff" ]
+            "AccountERC20Tracker.isAsset"[ label = "isAsset", color="#007bff", fillcolor="#007bff" ]
+            }
+
+        "AccountERC20Tracker.getPositionValue"[ label = "getPositionValue", color="#007bff", fillcolor="#007bff" ]
+        "AccountERC20Tracker.constructor"[ label = "constructor", color="#007bff", fillcolor="#007bff" ]
+        "AccountERC20Tracker.receive"[ label = "receive", color="#FF9797", fillcolor="#FF9797" ]
+        "AccountERC20Tracker.addAsset"[ label = "addAsset", color="#28a745", fillcolor="#FF9797" ]
+        "AccountERC20Tracker.init"[ label = "init", color="#28a745", fillcolor="#FF9797" ]
+        "AccountERC20Tracker.removeAsset"[ label = "removeAsset", color="#28a745", fillcolor="#FF9797" ]
+    }
+
+    //================================================================
+    // 19. LinearCreditDebtTrackerBeaconFactory Contract
+    subgraph cluster_LinearCreditDebtTrackerBeaconFactory {
+        graph [ label = "LinearCreditDebtTrackerBeaconFactory", color = "#445773", fontcolor = "#f0f0f0", style="rounded", bgcolor="#445773" ];
+
+        subgraph cluster_LinearCreditDebtTrackerBeaconFactoryStorage {
+            graph [ label = "Storage", color = "#e8726d", fontcolor = "#f0f0f0", style = "rounded,dashed", bgcolor = "#3b4b63" ];
+            "LinearCreditDebtTrackerBeaconFactory.implementation"[ label = "implementation", color="#007bff", fillcolor="#007bff" ]
+            "LinearCreditDebtTrackerBeaconFactory.GLOBAL"[ label = "GLOBAL", color="#007bff", fillcolor="#007bff" ]
+            "LinearCreditDebtTrackerBeaconFactory.instanceToShares"[ label = "instanceToShares"]
+        }
+        "LinearCreditDebtTrackerBeaconFactory.constructor"[ label = "constructor", color="#007bff"]
+        "LinearCreditDebtTrackerBeaconFactory.setImplementation"[ label = "setImplementation", color="#FF9797", fillcolor="#FF9797" ]
+        "LinearCreditDebtTrackerBeaconFactory.deployProxy"[ label = "deployProxy", color="#FF9797", fillcolor="#FF9797" ]
+        "LinearCreditDebtTrackerBeaconFactory.getSharesForInstance"[ label = "getSharesForInstance", color="#007bff", fillcolor="#007bff" ]
+    }
+
+    //  LinearCreditDebtTrackerBeaconFactory Contract Edges
+
+    "LinearCreditDebtTrackerBeaconFactory.constructor" -> "Global.owner" [ color="#007bff", fontcolor="#FFD700", label="1. Get global Admin Address", id="flow-LinearCreditDebtTrackerBeaconFactory_constructor-step-1", lhead=cluster_Global ];
+    "LinearCreditDebtTrackerBeaconFactory.constructor" -> "LinearCreditDebtTrackerBeaconFactory.GLOBAL" [ color="#FF9797", fontcolor="#FFD700", label="2. Sets GLOBAL Admin", id="flow-LinearCreditDebtTrackerBeaconFactory_constructor-step-2" ];
+
+    "LinearCreditDebtTrackerBeaconFactory.setImplementation" -> "LinearCreditDebtTrackerBeaconFactory.implementation" [ color="#FF9797", fontcolor="#FFD700", label="Sets Implimentation", id="flow-LinearCreditDebtTrackerBeaconFactory_setImplementation-step-1" ];
+
+    "LinearCreditDebtTrackerBeaconFactory.deployProxy" -> "LinearCreditDebtTracker.constructor" [ color="#FF9797", fontcolor="#FFD700", label="Deploy an Instance of Shares", id="flow-LinearCreditDebtTrackerBeaconFactory_deployProxy-step-1" ];
+    "LinearCreditDebtTrackerBeaconFactory.deployProxy" -> "LinearCreditDebtTrackerBeaconFactory.instanceToShares" [ color="#FF9797", fontcolor="#FFD700", label="Record Instance Shares creation", id="flow-LinearCreditDebtTrackerBeaconFactory_deployProxy-step-2" ];
+
+    "LinearCreditDebtTrackerBeaconFactory.getSharesForInstance" -> "LinearCreditDebtTrackerBeaconFactory.instanceToShares" [ color="#007bff", fontcolor="#007bff", label="Get Shares Address For LinearCreditDebtTracker Instance", id="flow-LinearCreditDebtTrackerBeaconFactory_getSharesForInstance-step-1" ];
+
+    //================================================================
+    // 20. LinearCreditDebtTracker Contract
+    subgraph cluster_LinearCreditDebtTracker {
+        graph [ label = "LinearCreditDebtTracker", color = "#445773", fontcolor = "#f0f0f0", style="rounded", bgcolor="#445773" ];
+
+        subgraph cluster_LinearCreditDebtTrackerStorage {
+            graph [ label = "Storage", color = "#e8726d", fontcolor = "#f0f0f0", style = "rounded,dashed", bgcolor = "#3b4b63" ];
+
+            "LinearCreditDebtTracker.SHARES"[ label = "SHARES", color="#007bff", fillcolor="#007bff" ]
+            "LinearCreditDebtTracker.getItem"[ label = "getItem", color="#007bff", fillcolor="#007bff" ]
+            "LinearCreditDebtTracker.getItemIds"[ label = "getItemIds", color="#007bff", fillcolor="#007bff" ]
+            "LinearCreditDebtTracker.getItemsCount"[ label = "getItemsCount", color="#007bff", fillcolor="#007bff" ]
+            "LinearCreditDebtTracker.getLastItemId"[ label = "getLastItemId", color="#007bff", fillcolor="#007bff" ]
+
+            }
+
+        "LinearCreditDebtTracker.getPositionValue"[ label = "getPositionValue", color="#007bff", fillcolor="#007bff" ]
+        "LinearCreditDebtTracker.constructor"[ label = "constructor", color="#007bff", fillcolor="#007bff" ]
+        "LinearCreditDebtTracker.recieve"[ label = "recieve", color="#FF9797", fillcolor="#FF9797" ]
+        "LinearCreditDebtTracker.calcItemValue"[ label = "calcItemValue", color="#007bff", fillcolor="#007bff" ]
+        "LinearCreditDebtTracker.addItem"[ label = "addItem", color="#28a745", fillcolor="#FF9797" ]
+        "LinearCreditDebtTracker.removeItem"[ label = "removeItem", color="#28a745", fillcolor="#FF9797" ]
+        "LinearCreditDebtTracker.updateSettledValue"[ label = "updateSettledValue", color="#29a745", fillcolor="#FF9797" ]
+    }
+
+    //================================================================
+    // 21. Global Contract: Ok
+    subgraph cluster_Global {
+        graph [ label = "Global", color = "#445773", fontcolor = "#f0f0f0", style="rounded", bgcolor="#445773" ];
+
+        subgraph cluster_SharesBeaconFactoryStorage {
+            graph [ label = "Storage", color = "#e8726d", fontcolor = "#f0f0f0", style = "rounded,dashed", bgcolor = "#3b4b63" ];
+            "Global.UPGRADE_INTERFACE_VERSION"[ label = "UPGRADE_INTERFACE_VERSION", color="#28a745", fillcolor="#28a745" ]
+            "Global.proxiableUUID"[ label = "proxiableUUID", color="#28a745", fillcolor="#28a745" ]
+            "Global.owner"[ label = "owner", color="#007bff", fillcolor="#007bff" ]
+            }
+
+        "Global.pendingOwner"[ label = "pendingOwner", color="#007bff", fillcolor="#007bff" ]
+        "Global.acceptOwnership"[ label = "acceptOwnership", color="#28a745", fillcolor="#FF9797" ]
+        "Global.renounceOwnership"[ label = "renounceOwnership", color="#28a745", fillcolor="#FF9797" ]
+        "Global.transferOwnership"[ label = "transferOwnership", color="#28a745", fillcolor="#FF9797" ]
+        "Global.upgradeToAndCall"[ label = "upgradeToAndCall", color="#28a745", fillcolor="#FF9797" ]
+        "Global.init"[ label = "init", color="#28a745", fillcolor="#FF9797" ]
+    }
+
+    //================================================================
+    // 22. OneToOneAggregator Contract
+    subgraph cluster_OneToOneAggregator {
+        graph [ label = "OneToOneAggregator", color = "#445773", fontcolor = "#f0f0f0", style="rounded", bgcolor="#445773" ];
+        "OneToOneAggregator.decimals"[ label = "decimals", color="#28a745", fillcolor="#28a745" ]
+        "OneToOneAggregator.latestRoundData"[ label = "latestRoundData", color="#007bff", fillcolor="#007bff" ]
+    }
+
+    subgraph cluster_Users {
+        graph [ label = "Users", color = "#445773", fontcolor = "#f0f0f0", style="rounded", bgcolor="#445773" ];
+        "Users.alice"[ label = "alice", color="#28a745", fillcolor="#28a745" ]
+        "Users.bob"[ label = "bob", color="#28a745", fillcolor="#28a745" ]
+    }
+
+    //================================================================
+    // Genearl Edges
+
+    "Shares.constructor" -> { "ValuationHandlerBeaconFactory.constructor"; "FeeHandlerBeaconFactory.constructor"; "ERC7540LikeDepositQueueBeaconFactory.constructor"; "ERC7540LikeRedeemQueueBeaconFactory.constructor"; "ContinuousFlatRateManagementFeeTrackerBeaconFactory.constructor"; "OpenAccessLimitedCallForwarderBeaconFactory.constructor"; "LimitedAccessLimitedCallForwarderBeaconFactory.constructor"; "AccountERC20TrackerBeaconFactory.constructor"; "LinearCreditDebtTrackerBeaconFactory.constructor"; } [style=invis, lhead="Shares.constructor"]
+
+    //================================================================
+    //  e2e Edges
+    "Users.alice" -> "ERC7540LikeDepositQueue.requestDeposit" [ color="#FF9797", fontcolor="#F0F0F0", label="1. Request deposit", id="flow-test_deposit_withdraw-step-1" ];
+    "ERC7540LikeDepositQueue.requestDeposit" -> "ERC7540LikeDepositQueue.executeDepositRequests" [ color="#FF9797", fontcolor="#F0F0F0", label="2. execute deposit", id="flow-test_deposit_withdraw-step-2" ];
+    "ERC7540LikeDepositQueue.executeDepositRequests" -> "ERC7540LikeRedeemQueue.requestRedeem" [ color="#FF9797", fontcolor="#F0F0F0", label="3. request redeem", id="flow-test_deposit_withdraw-step-3" ];
+    "ERC7540LikeRedeemQueue.requestRedeem" -> "ERC7540LikeRedeemQueue.executeRedeemRequests" [ color="#FF9797", fontcolor="#F0F0F0", label="4. execute redeem", id="flow-test_deposit_withdraw-step-4" ];
+
+    //================================================================
+    // Legend
+    //================================================================
+    rankdir=LR
+    node [shape=plaintext]
+    subgraph cluster_Legend {
+        label = "Legend";
+        key [label=<
+        <table border="0" cellpadding="2" cellspacing="0" cellborder="0">
+            <tr><td align="right" port="i1">Pure Call</td></tr>
+            <tr><td align="right" port="i2">View Call / Reads</td></tr>
+            <tr><td align="right" port="i3">State Modifying Call / Writes</td></tr>
+            <tr><td align="right" port="i4">Defined Contract</td></tr>
+            <tr><td align="right" port="i6">Pure Functions</td></tr>
+            <tr><td align="right" port="i7">View Functions / Storage</td></tr>
+            <tr><td align="right" port="i8">State Modifying Functions</td></tr>
+        </table>>]
+        key2 [label=<
+        <table border="0" cellpadding="2" cellspacing="0" cellborder="0">
+            <tr><td port="i1">&nbsp;&nbsp;&nbsp;</td></tr>
+            <tr><td port="i2">&nbsp;&nbsp;&nbsp;</td></tr>
+            <tr><td port="i3">&nbsp;&nbsp;&nbsp;</td></tr>
+            <tr><td port="i4" bgcolor="#445773">&nbsp;&nbsp;&nbsp;</td></tr>
+            <tr><td port="i6" bgcolor="#28a745">&nbsp;&nbsp;&nbsp;</td></tr>
+            <tr><td port="i7" bgcolor="#007bff">&nbsp;&nbsp;&nbsp;</td></tr>
+            <tr><td port="i8" bgcolor="#FF9797">&nbsp;&nbsp;&nbsp;</td></tr>
+        </table>>]
+        key:i1:e -> key2:i1:w [color="#28a745"];
+        key:i2:e -> key2:i2:w [color="#007bff"];
+        key:i3:e -> key2:i3:w [color="#FF9797"];
+    }
+}

@@ -1,0 +1,45 @@
+name: Deploy mdBook to GitHub Pages
+
+on:
+  push:
+    branches:
+      # This will run the workflow for pushes to ANY branch that is NOT gh-pages.
+      # This is a flexible setup that allows you to preview docs from any feature branch.
+      - '**'
+      - '!gh-pages'
+
+# Prevents multiple concurrent workflow runs for the same branch
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    # IMPORTANT: Grant permissions for the GITHUB_TOKEN to push to the gh-pages branch.
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup mdBook
+        uses: peaceiris/actions-mdbook@v1
+        with:
+          # Pin to a specific version for stability, or use 'latest'
+          mdbook-version: '0.4.37'
+          # Use cache to speed up subsequent builds
+          use-cache: true
+
+      - name: Build the book
+        # The source of the book is in the 'docs' directory
+        run: mdbook build docs
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4 # Use the latest version of the action
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          # The directory that contains the built book
+          publish_dir: ./docs/book

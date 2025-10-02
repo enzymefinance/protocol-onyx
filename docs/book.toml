@@ -1,0 +1,9 @@
+[book]
+authors = ["Emile Sean"]
+language = "en"
+src = "src"
+title = "kitchen"
+
+[output.html]
+additional-css = ["theme/pagetoc.css", "theme/collapsible.css"]
+additional-js = ["theme/pagetoc.js", "theme/collapsible.js"]

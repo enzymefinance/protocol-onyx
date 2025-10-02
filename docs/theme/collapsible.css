@@ -1,0 +1,36 @@
+.collapsible-header > td {
+    cursor: pointer;
+}
+
+.toggle-icon {
+    display: inline-block;
+    width: 1.2em;
+    text-align: center;
+    transition: transform 0.2s ease-in-out;
+    font-size: 0.8em;
+    color: var(--sidebar-fg);
+}
+
+.bwc-h1 .toggle-icon {
+    font-size: 0.9em;
+}
+
+.bwc-h2 .toggle-icon {
+    margin-left: 20px; /* Indent H2 toggles */
+}
+
+
+.expanded > td > .toggle-icon {
+    transform: rotate(90deg);
+}
+
+/* Reset header styling specifically within the BWC table */
+.page-wrapper table h1,
+.page-wrapper table h2,
+.page-wrapper table h3 {
+    font-size: inherit;
+    font-weight: bold; /* Make all headers bold */
+    line-height: inherit;
+    margin: 0;
+    padding: 0;
+}
