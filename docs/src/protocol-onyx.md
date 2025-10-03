@@ -290,7 +290,7 @@ document.addEventListener("DOMContentLoaded", function() {
             { name: "🔎 instanceToShares", flow: "", startNode: "ERC7540LikeDepositQueueBeaconFactory.instanceToShares"},
             { name: "🔎 getSharesForInstance", flow: "", startNode: "ERC7540LikeDepositQueueBeaconFactory.getSharesForInstance"},
             { name: "▶️ constructor", flow: "ERC7540LikeDepositQueueBeaconFactory_constructor", startNode: "ERC7540LikeDepositQueueBeaconFactory.constructor"},
-            { name: "▶️ ssetImplementation", flow: "", startNode: "ERC7540LikeDepositQueueBeaconFactory.setImplementation"},
+            { name: "▶️ setImplementation", flow: "", startNode: "ERC7540LikeDepositQueueBeaconFactory.setImplementation"},
             { name: "▶️ ddeployProxy", flow: "", startNode: "ERC7540LikeDepositQueueBeaconFactory.deployProxy"},
           ],
           // 8. SLOC  2076
@@ -321,7 +321,7 @@ document.addEventListener("DOMContentLoaded", function() {
             { name: "🔎 instanceToShares", flow: "", startNode: "ERC7540LikeRedeemQueueBeaconFactory.instanceToShares"},
             { name: "🔎 getSharesForInstance", flow: "", startNode: "ERC7540LikeRedeemQueueBeaconFactory.getSharesForInstance"},
             { name: "▶️ constructor", flow: "ERC7540LikeRedeemQueueBeaconFactory_constructor", startNode: "ERC7540LikeRedeemQueueBeaconFactory.constructor"},
-            { name: "▶️ ssetImplementation", flow: "", startNode: "ERC7540LikeRedeemQueueBeaconFactory.setImplementation"},
+            { name: "▶️ setImplementation", flow: "", startNode: "ERC7540LikeRedeemQueueBeaconFactory.setImplementation"},
             { name: "▶️ ddeployProxy", flow: "", startNode: "ERC7540LikeRedeemQueueBeaconFactory.deployProxy"},
           ],
           // 10. SLOC  2028
@@ -346,7 +346,7 @@ document.addEventListener("DOMContentLoaded", function() {
             { name: "🔎 instanceToShares", flow: "", startNode: "ContinuousFlatRateManagementFeeTrackerBeaconFactory.instanceToShares"},
             { name: "🔎 getSharesForInstance", flow: "", startNode: "ContinuousFlatRateManagementFeeTrackerBeaconFactory.getSharesForInstance"},
             { name: "▶️ constructor", flow: "ContinuousFlatRateManagementFeeTrackerBeaconFactory_constructor", startNode: "ContinuousFlatRateManagementFeeTrackerBeaconFactory.constructor"},
-            { name: "▶️ ssetImplementation", flow: "", startNode: "ContinuousFlatRateManagementFeeTrackerBeaconFactory.setImplementation"},
+            { name: "▶️ setImplementation", flow: "", startNode: "ContinuousFlatRateManagementFeeTrackerBeaconFactory.setImplementation"},
             { name: "▶️ ddeployProxy", flow: "", startNode: "ContinuousFlatRateManagementFeeTrackerBeaconFactory.deployProxy"},
           ],
           // 12.  SLOC 772
@@ -408,12 +408,12 @@ document.addEventListener("DOMContentLoaded", function() {
             { name: "🔎 instanceToShares", flow: "", startNode: "AccountERC20TrackerBeaconFactory.instanceToShares"},
             { name: "🔎 getSharesForInstance", flow: "", startNode: "AccountERC20TrackerBeaconFactory.getSharesForInstance"},
             { name: "▶️ constructor", flow: "AccountERC20TrackerBeaconFactory_constructor", startNode: "AccountERC20TrackerBeaconFactory.constructor"},
-            { name: "▶️ ssetImplementation", flow: "", startNode: "AccountERC20TrackerBeaconFactory.setImplementation"},
-            { name: "▶️ ddeployProxy", flow: "", startNode: "AccountERC20TrackerBeaconFactory.deployProxy"},
+            { name: "▶️ setImplementation", flow: "", startNode: "AccountERC20TrackerBeaconFactory.setImplementation"},
+            { name: "▶️ deployProxy", flow: "", startNode: "AccountERC20TrackerBeaconFactory.deployProxy"},
           ],
           // 18. SLOC  1304
           "AccountERC20Tracker": [
-            { name: "🔎 SHARES", flow: "", startNode: "AccountERC21Tracker.SHARES"},
+            { name: "🔎 SHARES", flow: "", startNode: "AccountERC20Tracker.SHARES"},
             { name: "🔎 getAccount", flow: "", startNode: "AccountERC20Tracker.getAccount"},
             { name: "🔎 getAssets", flow: "", startNode: "AccountERC20Tracker.getAssets"},
             { name: "🔎 getPositionValue", flow: "", startNode: "AccountERC20Tracker.getPositionValue"},
@@ -430,7 +430,7 @@ document.addEventListener("DOMContentLoaded", function() {
             { name: "🔎 instanceToShares", flow: "", startNode: "LinearCreditDebtTrackerBeaconFactory.instanceToShares"},
             { name: "🔎 getSharesForInstance", flow: "", startNode: "LinearCreditDebtTrackerBeaconFactory.getSharesForInstance"},
             { name: "▶️ constructor", flow: "LinearCreditDebtTrackerBeaconFactory_constructor", startNode: "LinearCreditDebtTrackerBeaconFactory.constructor"},
-            { name: "▶️ ssetImplementation", flow: "", startNode: "LinearCreditDebtTrackerBeaconFactory.setImplementation"},
+            { name: "▶️ setImplementation", flow: "", startNode: "LinearCreditDebtTrackerBeaconFactory.setImplementation"},
             { name: "▶️ ddeployProxy", flow: "", startNode: "LinearCreditDebtTrackerBeaconFactory.deployProxy"},
           ],
           // 20. SLOC  808
