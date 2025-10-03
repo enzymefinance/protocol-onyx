@@ -209,7 +209,7 @@ contract e2e is Test {
         eRC7540LikeDepositQueueInstance.executeDepositRequests(requestId);
 
         vm.startPrank(alice);
-        usdt.approve(address(eRC7540LikeRedeemQueueInstance), type(uint256).max);
+        sharesInstance.approve(address(eRC7540LikeRedeemQueueInstance), type(uint256).max);
         (uint256 requestId2) = eRC7540LikeRedeemQueueInstance.requestRedeem(1e18, alice, alice);
         vm.stopPrank();
 
