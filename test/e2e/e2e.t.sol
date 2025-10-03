@@ -146,8 +146,7 @@ contract e2e is Test {
             )
         );
 
-        feeHandlerInstance =
-            FeeHandler(addrs.feeHandlerBeaconFactory.deployProxy(address(sharesInstance), bytes("")));
+        feeHandlerInstance = FeeHandler(addrs.feeHandlerBeaconFactory.deployProxy(address(sharesInstance), bytes("")));
 
         continuousFlatRateManagementFeeTrackerInstance = ContinuousFlatRateManagementFeeTracker(
             addrs.continuousFlatRateManagementFeeTrackerBeaconFactory.deployProxy(address(sharesInstance), bytes(""))
