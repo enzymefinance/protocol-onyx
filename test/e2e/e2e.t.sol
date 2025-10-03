@@ -147,14 +147,14 @@ contract e2e is Test {
         );
 
         feeHandlerInstance =
-            FeeHandler(addrs.erc7540LikeDepositQueueBeaconFactory.deployProxy(address(sharesInstance), bytes("")));
+            FeeHandler(addrs.feeHandlerBeaconFactory.deployProxy(address(sharesInstance), bytes("")));
 
         continuousFlatRateManagementFeeTrackerInstance = ContinuousFlatRateManagementFeeTracker(
-            addrs.feeHandlerBeaconFactory.deployProxy(address(sharesInstance), bytes(""))
+            addrs.continuousFlatRateManagementFeeTrackerBeaconFactory.deployProxy(address(sharesInstance), bytes(""))
         );
 
         continuousFlatRatePerformanceFeeTrackerInstance = ContinuousFlatRatePerformanceFeeTracker(
-            addrs.continuousFlatRateManagementFeeTrackerBeaconFactory.deployProxy(address(sharesInstance), bytes(""))
+            addrs.continuousFlatRatePerformanceFeeTrackerBeaconFactory.deployProxy(address(sharesInstance), bytes(""))
         );
 
         valuationHandlerInstance =
