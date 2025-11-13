@@ -27,9 +27,7 @@ interface IERC7540LikeDepositHandler {
     /// @param _controller The account that will own the request
     /// @param _owner The account that owns the assets to be used in the deposit request
     /// @return requestId_ The id of the request
-    function requestDeposit(uint256 _assets, address _controller, address _owner)
-        external
-        returns (uint256 requestId_);
+    function requestDeposit(uint256 _assets, address _controller, address _owner) external returns (uint256 requestId_);
 
     //==================================================================================================================
     // ERC4626

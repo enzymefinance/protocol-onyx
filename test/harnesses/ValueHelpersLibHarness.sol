@@ -118,8 +118,7 @@ contract ValueHelpersLibHarness {
         returns (uint256 rate_)
     {
         return ValueHelpersLib.parseValidatedRateFromAggregatorV3({
-            _aggregator: _aggregator,
-            _timestampTolerance: _timestampTolerance
+            _aggregator: _aggregator, _timestampTolerance: _timestampTolerance
         });
     }
 }

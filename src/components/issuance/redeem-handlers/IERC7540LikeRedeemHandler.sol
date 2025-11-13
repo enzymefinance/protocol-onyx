@@ -27,9 +27,7 @@ interface IERC7540LikeRedeemHandler {
     /// @param _controller The account that will own the request
     /// @param _owner The account that owns the shares to be used in the redeem request
     /// @return requestId_ The id of the request
-    function requestRedeem(uint256 _shares, address _controller, address _owner)
-        external
-        returns (uint256 requestId_);
+    function requestRedeem(uint256 _shares, address _controller, address _owner) external returns (uint256 requestId_);
 
     //==================================================================================================================
     // ERC4626

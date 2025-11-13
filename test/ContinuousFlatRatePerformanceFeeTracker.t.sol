@@ -13,15 +13,17 @@ pragma solidity 0.8.28;
 
 import {Test} from "forge-std/Test.sol";
 
-import {ContinuousFlatRatePerformanceFeeTracker} from
-    "src/components/fees/performance-fee-trackers/ContinuousFlatRatePerformanceFeeTracker.sol";
+import {
+    ContinuousFlatRatePerformanceFeeTracker
+} from "src/components/fees/performance-fee-trackers/ContinuousFlatRatePerformanceFeeTracker.sol";
 import {FeeTrackerHelpersMixin} from "src/components/fees/utils/FeeTrackerHelpersMixin.sol";
 import {ComponentHelpersMixin} from "src/components/utils/ComponentHelpersMixin.sol";
 import {Shares} from "src/shares/Shares.sol";
 import {VALUE_ASSET_PRECISION, ONE_HUNDRED_PERCENT_BPS} from "src/utils/Constants.sol";
 
-import {ContinuousFlatRatePerformanceFeeTrackerHarness} from
-    "test/harnesses/ContinuousFlatRatePerformanceFeeTrackerHarness.sol";
+import {
+    ContinuousFlatRatePerformanceFeeTrackerHarness
+} from "test/harnesses/ContinuousFlatRatePerformanceFeeTrackerHarness.sol";
 import {TestHelpers} from "test/utils/TestHelpers.sol";
 
 contract ContinuousFlatRatePerformanceFeeTrackerTest is TestHelpers {
@@ -105,8 +107,7 @@ contract ContinuousFlatRatePerformanceFeeTrackerTest is TestHelpers {
 
     function test_settlePerformanceFee_fail_noHwm() public {
         vm.expectRevert(
-            ContinuousFlatRatePerformanceFeeTracker
-                .ContinuousFlatRatePerformanceFeeTracker__SettlePerformanceFee__HighWaterMarkNotInitialized
+            ContinuousFlatRatePerformanceFeeTracker.ContinuousFlatRatePerformanceFeeTracker__SettlePerformanceFee__HighWaterMarkNotInitialized
                 .selector
         );
 
@@ -120,8 +121,7 @@ contract ContinuousFlatRatePerformanceFeeTrackerTest is TestHelpers {
         // Set valuation handler with default share price
         address valuationHandler = makeAddr("valuationHandler");
         valuationHandler_mockGetDefaultSharePrice({
-            _valuationHandler: valuationHandler,
-            _defaultSharePrice: defaultSharePrice
+            _valuationHandler: valuationHandler, _defaultSharePrice: defaultSharePrice
         });
         vm.prank(admin);
         shares.setValuationHandler(valuationHandler);
@@ -144,9 +144,7 @@ contract ContinuousFlatRatePerformanceFeeTrackerTest is TestHelpers {
     function test_settlePerformanceFee_success_belowHwm() public {
         // Give initial HWM of 1e18
         shares_mockSharePrice({
-            _shares: address(shares),
-            _sharePrice: VALUE_ASSET_PRECISION,
-            _timestamp: block.timestamp
+            _shares: address(shares), _sharePrice: VALUE_ASSET_PRECISION, _timestamp: block.timestamp
         });
         vm.prank(admin);
         performanceFeeTracker.resetHighWaterMark();
@@ -172,9 +170,7 @@ contract ContinuousFlatRatePerformanceFeeTrackerTest is TestHelpers {
     function test_settlePerformanceFee_success_aboveHwm() public {
         // Give initial HWM of 1e18
         shares_mockSharePrice({
-            _shares: address(shares),
-            _sharePrice: VALUE_ASSET_PRECISION,
-            _timestamp: block.timestamp
+            _shares: address(shares), _sharePrice: VALUE_ASSET_PRECISION, _timestamp: block.timestamp
         });
         vm.prank(admin);
         performanceFeeTracker.resetHighWaterMark();
@@ -194,10 +190,7 @@ contract ContinuousFlatRatePerformanceFeeTrackerTest is TestHelpers {
         increaseSharesSupply({_shares: address(shares), _increaseAmount: sharesSupply});
 
         __test_settlePerformanceFee_success({
-            _rate: rate,
-            _netValue: netValue,
-            _expectedHwm: expectedHwm,
-            _expectedValueDue: expectedValueDue
+            _rate: rate, _netValue: netValue, _expectedHwm: expectedHwm, _expectedValueDue: expectedValueDue
         });
     }
 

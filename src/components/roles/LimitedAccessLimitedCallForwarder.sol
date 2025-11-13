@@ -67,8 +67,7 @@ contract LimitedAccessLimitedCallForwarder is OpenAccessLimitedCallForwarder {
 
     constructor() {
         StorageHelpersLib.verifyErc7201LocationForId({
-            _location: LIMITED_ACCESS_LIMITED_CALL_FORWARDER,
-            _id: LIMITED_ACCESS_LIMITED_CALL_FORWARDER_ID
+            _location: LIMITED_ACCESS_LIMITED_CALL_FORWARDER, _id: LIMITED_ACCESS_LIMITED_CALL_FORWARDER_ID
         });
     }
 

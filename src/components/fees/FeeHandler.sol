@@ -120,8 +120,7 @@ contract FeeHandler is IFeeHandler, ComponentHelpersMixin {
 
     constructor() {
         StorageHelpersLib.verifyErc7201LocationForId({
-            _location: FEE_HANDLER_STORAGE_LOCATION,
-            _id: FEE_HANDLER_STORAGE_LOCATION_ID
+            _location: FEE_HANDLER_STORAGE_LOCATION, _id: FEE_HANDLER_STORAGE_LOCATION_ID
         });
     }
 
@@ -295,8 +294,9 @@ contract FeeHandler is IFeeHandler, ComponentHelpersMixin {
         internal
         returns (uint256 feeSharesAmount_)
     {
-        (uint16 feeBps, address recipient) =
-            _isEntrance ? (getEntranceFeeBps(), getEntranceFeeRecipient()) : (getExitFeeBps(), getExitFeeRecipient());
+        (uint16 feeBps, address recipient) = _isEntrance
+            ? (getEntranceFeeBps(), getEntranceFeeRecipient())
+            : (getExitFeeBps(), getExitFeeRecipient());
         if (feeBps == 0) return 0;
 
         feeSharesAmount_ = __calcEntranceExitFee({_grossSharesAmount: _grossSharesAmount, _feeBps: feeBps});

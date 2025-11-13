@@ -13,15 +13,17 @@ pragma solidity 0.8.28;
 
 import {Test} from "forge-std/Test.sol";
 
-import {ContinuousFlatRateManagementFeeTracker} from
-    "src/components/fees/management-fee-trackers/ContinuousFlatRateManagementFeeTracker.sol";
+import {
+    ContinuousFlatRateManagementFeeTracker
+} from "src/components/fees/management-fee-trackers/ContinuousFlatRateManagementFeeTracker.sol";
 import {FeeTrackerHelpersMixin} from "src/components/fees/utils/FeeTrackerHelpersMixin.sol";
 import {ComponentHelpersMixin} from "src/components/utils/ComponentHelpersMixin.sol";
 import {Shares} from "src/shares/Shares.sol";
 import {ONE_HUNDRED_PERCENT_BPS, SECONDS_IN_YEAR} from "src/utils/Constants.sol";
 
-import {ContinuousFlatRateManagementFeeTrackerHarness} from
-    "test/harnesses/ContinuousFlatRateManagementFeeTrackerHarness.sol";
+import {
+    ContinuousFlatRateManagementFeeTrackerHarness
+} from "test/harnesses/ContinuousFlatRateManagementFeeTrackerHarness.sol";
 import {TestHelpers} from "test/utils/TestHelpers.sol";
 
 contract ContinuousFlatRateManagementFeeTrackerTest is TestHelpers {
@@ -114,8 +116,7 @@ contract ContinuousFlatRateManagementFeeTrackerTest is TestHelpers {
 
     function test_settleManagementFee_fail_noLastSettled() public {
         vm.expectRevert(
-            ContinuousFlatRateManagementFeeTracker
-                .ContinuousFlatRateManagementFeeTracker__SettleManagementFee__LastSettledNotInitialized
+            ContinuousFlatRateManagementFeeTracker.ContinuousFlatRateManagementFeeTracker__SettleManagementFee__LastSettledNotInitialized
                 .selector
         );
 

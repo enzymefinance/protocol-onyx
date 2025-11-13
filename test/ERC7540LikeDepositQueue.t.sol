@@ -129,7 +129,7 @@ contract ERC7540LikeDepositQueueTest is TestHelpers {
     function test_setDepositRestriction_fail_notAdminOrOwner() public {
         address randomUser = makeAddr("randomUser");
         ERC7540LikeDepositQueue.DepositRestriction restriction =
-            ERC7540LikeDepositQueue.DepositRestriction.ControllerAllowlist;
+        ERC7540LikeDepositQueue.DepositRestriction.ControllerAllowlist;
 
         vm.expectRevert(ComponentHelpersMixin.ComponentHelpersMixin__OnlyAdminOrOwner__Unauthorized.selector);
 
@@ -139,7 +139,7 @@ contract ERC7540LikeDepositQueueTest is TestHelpers {
 
     function test_setDepositRestriction_success() public {
         ERC7540LikeDepositQueue.DepositRestriction restriction =
-            ERC7540LikeDepositQueue.DepositRestriction.ControllerAllowlist;
+        ERC7540LikeDepositQueue.DepositRestriction.ControllerAllowlist;
 
         vm.expectEmit();
         emit ERC7540LikeDepositQueue.DepositRestrictionSet(restriction);
@@ -347,10 +347,7 @@ contract ERC7540LikeDepositQueueTest is TestHelpers {
 
             vm.prank(_tokenOwner);
             depositQueue.requestDepositReferred({
-                _assets: _assetAmount,
-                _controller: _controller,
-                _owner: _tokenOwner,
-                _referrer: referrer
+                _assets: _assetAmount, _controller: _controller, _owner: _tokenOwner, _referrer: referrer
             });
         } else {
             vm.prank(_tokenOwner);
@@ -433,9 +430,7 @@ contract ERC7540LikeDepositQueueTest is TestHelpers {
         vm.prank(admin);
         valuationHandler.setAssetRate(
             ValuationHandler.AssetRateInput({
-                asset: asset,
-                rate: depositAssetToValueAssetRate,
-                expiry: uint40(block.timestamp + 1)
+                asset: asset, rate: depositAssetToValueAssetRate, expiry: uint40(block.timestamp + 1)
             })
         );
 
@@ -466,17 +461,13 @@ contract ERC7540LikeDepositQueueTest is TestHelpers {
         // Create the requests
         vm.prank(request1Controller);
         depositQueue.requestDeposit({
-            _assets: request1AssetAmount,
-            _controller: request1Controller,
-            _owner: request1Controller
+            _assets: request1AssetAmount, _controller: request1Controller, _owner: request1Controller
         });
         vm.prank(request2Controller);
         depositQueue.requestDeposit({_assets: 456, _controller: request2Controller, _owner: request2Controller});
         vm.prank(request3Controller);
         depositQueue.requestDeposit({
-            _assets: request3AssetAmount,
-            _controller: request3Controller,
-            _owner: request3Controller
+            _assets: request3AssetAmount, _controller: request3Controller, _owner: request3Controller
         });
 
         // Define ids to execute: first and last items
@@ -494,8 +485,7 @@ contract ERC7540LikeDepositQueueTest is TestHelpers {
         });
         vm.expectEmit();
         emit IERC7540LikeDepositHandler.DepositRequestExecuted({
-            requestId: 1,
-            sharesAmount: request1ExpectedSharesAmount
+            requestId: 1, sharesAmount: request1ExpectedSharesAmount
         });
 
         vm.expectEmit();
@@ -507,8 +497,7 @@ contract ERC7540LikeDepositQueueTest is TestHelpers {
         });
         vm.expectEmit();
         emit IERC7540LikeDepositHandler.DepositRequestExecuted({
-            requestId: 3,
-            sharesAmount: request3ExpectedSharesAmount
+            requestId: 3, sharesAmount: request3ExpectedSharesAmount
         });
 
         // Execute the requests

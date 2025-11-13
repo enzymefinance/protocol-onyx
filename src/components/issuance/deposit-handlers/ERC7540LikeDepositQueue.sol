@@ -115,8 +115,7 @@ contract ERC7540LikeDepositQueue is IERC7540LikeDepositHandler, ERC7540LikeIssua
 
     constructor() {
         StorageHelpersLib.verifyErc7201LocationForId({
-            _location: DEPOSIT_QUEUE_STORAGE_LOCATION,
-            _id: DEPOSIT_QUEUE_STORAGE_LOCATION_ID
+            _location: DEPOSIT_QUEUE_STORAGE_LOCATION, _id: DEPOSIT_QUEUE_STORAGE_LOCATION_ID
         });
     }
 
@@ -219,11 +218,7 @@ contract ERC7540LikeDepositQueue is IERC7540LikeDepositHandler, ERC7540LikeIssua
 
         // Required event for ERC7540
         emit DepositRequest({
-            controller: _controller,
-            owner: _owner,
-            requestId: requestId_,
-            sender: msg.sender,
-            assets: _assets
+            controller: _controller, owner: _owner, requestId: requestId_, sender: msg.sender, assets: _assets
         });
     }
 
@@ -270,10 +265,7 @@ contract ERC7540LikeDepositQueue is IERC7540LikeDepositHandler, ERC7540LikeIssua
 
             // Required event for ERC7540
             emit Deposit({
-                sender: request.controller,
-                owner: request.controller,
-                assets: request.assetAmount,
-                shares: netShares
+                sender: request.controller, owner: request.controller, assets: request.assetAmount, shares: netShares
             });
 
             emit DepositRequestExecuted({requestId: requestId, sharesAmount: netShares});

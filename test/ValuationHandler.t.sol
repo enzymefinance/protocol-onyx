@@ -269,8 +269,7 @@ contract ValuationHandlerTest is TestHelpers {
 
         vm.prank(randomUser);
         valuationHandler.setAssetRatesThenUpdateShareValue({
-            _rateInputs: new ValuationHandler.AssetRateInput[](0),
-            _untrackedPositionsValue: 0
+            _rateInputs: new ValuationHandler.AssetRateInput[](0), _untrackedPositionsValue: 0
         });
     }
 
@@ -298,8 +297,7 @@ contract ValuationHandlerTest is TestHelpers {
         // Set rates and update share value
         vm.prank(admin);
         valuationHandler.setAssetRatesThenUpdateShareValue({
-            _rateInputs: rateInputs,
-            _untrackedPositionsValue: untrackedPositionsValue
+            _rateInputs: rateInputs, _untrackedPositionsValue: untrackedPositionsValue
         });
 
         // Validate rates

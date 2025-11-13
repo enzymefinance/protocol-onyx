@@ -80,8 +80,7 @@ contract OpenAccessLimitedCallForwarder is ComponentHelpersMixin {
 
     constructor() {
         StorageHelpersLib.verifyErc7201LocationForId({
-            _location: OPEN_ACCESS_LIMITED_CALL_FORWARDER,
-            _id: OPEN_ACCESS_LIMITED_CALL_FORWARDER_ID
+            _location: OPEN_ACCESS_LIMITED_CALL_FORWARDER, _id: OPEN_ACCESS_LIMITED_CALL_FORWARDER_ID
         });
     }
 

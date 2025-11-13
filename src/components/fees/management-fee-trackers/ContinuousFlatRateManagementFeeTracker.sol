@@ -68,8 +68,7 @@ contract ContinuousFlatRateManagementFeeTracker is IManagementFeeTracker, FeeTra
 
     constructor() {
         StorageHelpersLib.verifyErc7201LocationForId({
-            _location: MANAGEMENT_FEE_TRACKER_STORAGE_LOCATION,
-            _id: MANAGEMENT_FEE_TRACKER_STORAGE_LOCATION_ID
+            _location: MANAGEMENT_FEE_TRACKER_STORAGE_LOCATION, _id: MANAGEMENT_FEE_TRACKER_STORAGE_LOCATION_ID
         });
     }
 

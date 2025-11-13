@@ -114,9 +114,7 @@ contract LimitedAccessLimitedCallForwarderTest is TestHelpers {
         // do not register user
         OpenAccessLimitedCallForwarder.Call[] memory calls = new OpenAccessLimitedCallForwarder.Call[](1);
         calls[0] = OpenAccessLimitedCallForwarder.Call({
-            target: address(callTarget),
-            data: abi.encodeWithSelector(CallTarget.foo.selector),
-            value: 0
+            target: address(callTarget), data: abi.encodeWithSelector(CallTarget.foo.selector), value: 0
         });
 
         vm.expectRevert(
@@ -140,9 +138,7 @@ contract LimitedAccessLimitedCallForwarderTest is TestHelpers {
         // prepare calls
         OpenAccessLimitedCallForwarder.Call[] memory calls = new OpenAccessLimitedCallForwarder.Call[](1);
         calls[0] = OpenAccessLimitedCallForwarder.Call({
-            target: address(callTarget),
-            data: abi.encodeWithSelector(CallTarget.foo.selector),
-            value: 0
+            target: address(callTarget), data: abi.encodeWithSelector(CallTarget.foo.selector), value: 0
         });
 
         // call

@@ -76,8 +76,7 @@ contract ContinuousFlatRatePerformanceFeeTracker is IPerformanceFeeTracker, FeeT
 
     constructor() {
         StorageHelpersLib.verifyErc7201LocationForId({
-            _location: PERFORMANCE_FEE_TRACKER_STORAGE_LOCATION,
-            _id: PERFORMANCE_FEE_TRACKER_STORAGE_LOCATION_ID
+            _location: PERFORMANCE_FEE_TRACKER_STORAGE_LOCATION, _id: PERFORMANCE_FEE_TRACKER_STORAGE_LOCATION_ID
         });
     }
 
@@ -137,8 +136,7 @@ contract ContinuousFlatRatePerformanceFeeTracker is IPerformanceFeeTracker, FeeT
         // Calculate the value due for the increase
         uint256 valueIncreasePerShare = valuePerShare - hwm;
         uint256 valueIncrease = ValueHelpersLib.calcValueOfSharesAmount({
-            _valuePerShare: valueIncreasePerShare,
-            _sharesAmount: sharesSupply
+            _valuePerShare: valueIncreasePerShare, _sharesAmount: sharesSupply
         });
         valueDue_ = (valueIncrease * getRate()) / ONE_HUNDRED_PERCENT_BPS;
 
@@ -147,8 +145,7 @@ contract ContinuousFlatRatePerformanceFeeTracker is IPerformanceFeeTracker, FeeT
         uint256 netValueIncludingFee = _netValue - valueDue_;
         __updateHighWaterMark({
             _sharePrice: ValueHelpersLib.calcValuePerShare({
-                _totalValue: netValueIncludingFee,
-                _totalSharesAmount: sharesSupply
+                _totalValue: netValueIncludingFee, _totalSharesAmount: sharesSupply
             })
         });
 

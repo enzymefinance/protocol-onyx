@@ -166,8 +166,7 @@ contract Shares is ERC20Upgradeable, Ownable2StepUpgradeable {
 
     constructor() {
         StorageHelpersLib.verifyErc7201LocationForId({
-            _location: SHARES_STORAGE_LOCATION,
-            _id: SHARES_STORAGE_LOCATION_ID
+            _location: SHARES_STORAGE_LOCATION, _id: SHARES_STORAGE_LOCATION_ID
         });
     }
 
@@ -215,11 +214,8 @@ contract Shares is ERC20Upgradeable, Ownable2StepUpgradeable {
         address sharesTransferValidator = getSharesTransferValidator();
 
         if (sharesTransferValidator != address(0)) {
-            ISharesTransferValidator(sharesTransferValidator).validateSharesTransfer({
-                _from: _from,
-                _to: _to,
-                _amount: _amount
-            });
+            ISharesTransferValidator(sharesTransferValidator)
+                .validateSharesTransfer({_from: _from, _to: _to, _amount: _amount});
         }
     }
 

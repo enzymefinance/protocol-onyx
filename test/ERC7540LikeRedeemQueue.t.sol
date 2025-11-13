@@ -281,9 +281,7 @@ contract ERC7540LikeRedeemQueueTest is TestHelpers {
         vm.prank(admin);
         valuationHandler.setAssetRate(
             ValuationHandler.AssetRateInput({
-                asset: asset,
-                rate: redeemAssetToValueAssetRate,
-                expiry: uint40(block.timestamp + 1)
+                asset: asset, rate: redeemAssetToValueAssetRate, expiry: uint40(block.timestamp + 1)
             })
         );
 
@@ -317,17 +315,13 @@ contract ERC7540LikeRedeemQueueTest is TestHelpers {
         // Create the requests
         vm.prank(request1Controller);
         redeemQueue.requestRedeem({
-            _shares: request1SharesAmount,
-            _controller: request1Controller,
-            _owner: request1Controller
+            _shares: request1SharesAmount, _controller: request1Controller, _owner: request1Controller
         });
         vm.prank(request2Controller);
         redeemQueue.requestRedeem({_shares: 456, _controller: request2Controller, _owner: request2Controller});
         vm.prank(request3Controller);
         redeemQueue.requestRedeem({
-            _shares: request3SharesAmount,
-            _controller: request3Controller,
-            _owner: request3Controller
+            _shares: request3SharesAmount, _controller: request3Controller, _owner: request3Controller
         });
 
         // Define ids to execute: first and last items

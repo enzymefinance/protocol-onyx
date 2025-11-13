@@ -80,8 +80,7 @@ contract AccountERC20Tracker is IPositionTracker, ComponentHelpersMixin {
 
     constructor() {
         StorageHelpersLib.verifyErc7201LocationForId({
-            _location: ACCOUNT_ERC20_TRACKER_STORAGE_LOCATION,
-            _id: ACCOUNT_ERC20_TRACKER_STORAGE_LOCATION_ID
+            _location: ACCOUNT_ERC20_TRACKER_STORAGE_LOCATION, _id: ACCOUNT_ERC20_TRACKER_STORAGE_LOCATION_ID
         });
     }
 
@@ -137,8 +136,9 @@ contract AccountERC20Tracker is IPositionTracker, ComponentHelpersMixin {
         address[] memory assets = getAssets();
         uint256 valueUint;
         for (uint256 i; i < assets.length; i++) {
-            valueUint +=
-                __calcAssetValue({_account: getAccount(), _valuationHandler: valuationHandler, _asset: assets[i]});
+            valueUint += __calcAssetValue({
+                _account: getAccount(), _valuationHandler: valuationHandler, _asset: assets[i]
+            });
         }
 
         return valueUint.toInt256();

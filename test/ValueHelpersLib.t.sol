@@ -42,8 +42,7 @@ contract ValueHelpersLibTest is Test {
         uint256 expectedValue = 5_000;
 
         uint256 value = valueHelpersLib.exposed_calcValueOfSharesAmount({
-            _valuePerShare: valuePerShare,
-            _sharesAmount: sharesAmount
+            _valuePerShare: valuePerShare, _sharesAmount: sharesAmount
         });
 
         assertEq(value, expectedValue);
@@ -249,8 +248,7 @@ contract ValueHelpersLibTest is Test {
         );
 
         valueHelpersLib.exposed_parseValidatedRateFromAggregatorV3({
-            _aggregator: address(mockAggregator),
-            _timestampTolerance: timestampTolerance
+            _aggregator: address(mockAggregator), _timestampTolerance: timestampTolerance
         });
     }
 
@@ -271,8 +269,7 @@ contract ValueHelpersLibTest is Test {
 
         assertEq(
             valueHelpersLib.exposed_parseValidatedRateFromAggregatorV3({
-                _aggregator: address(mockAggregator),
-                _timestampTolerance: timestampTolerance
+                _aggregator: address(mockAggregator), _timestampTolerance: timestampTolerance
             }),
             rate
         );

@@ -60,10 +60,8 @@ contract FeeHandlerTestHelpers is TestHelpers {
         address recipient = makeAddr("setMockPerformanceFee:recipient");
 
         vm.prank(_admin);
-        FeeHandler(_feeHandler).setPerformanceFee({
-            _performanceFeeTracker: performanceFeeTracker_,
-            _recipient: recipient
-        });
+        FeeHandler(_feeHandler)
+            .setPerformanceFee({_performanceFeeTracker: performanceFeeTracker_, _recipient: recipient});
     }
 }
 
@@ -267,9 +265,7 @@ contract FeeHandlerTest is Test, FeeHandlerTestHelpers {
         vm.prank(admin);
         valuationHandler.setAssetRate(
             ValuationHandler.AssetRateInput({
-                asset: address(mockFeeAsset),
-                rate: uint128(assetRate),
-                expiry: uint40(block.timestamp + 1)
+                asset: address(mockFeeAsset), rate: uint128(assetRate), expiry: uint40(block.timestamp + 1)
             })
         );
 
@@ -337,8 +333,7 @@ contract FeeHandlerTest is Test, FeeHandlerTestHelpers {
         // Create mock ManagementFeeTracker and set the fee value due
         address managementFeeTracker = setMockManagementFee({_feeHandler: address(feeHandler), _admin: admin});
         managementFeeTracker_mockSettleManagementFee({
-            _managementFeeTracker: managementFeeTracker,
-            _valueDue: feeValueDue
+            _managementFeeTracker: managementFeeTracker, _valueDue: feeValueDue
         });
 
         vm.expectCall({
@@ -363,8 +358,7 @@ contract FeeHandlerTest is Test, FeeHandlerTestHelpers {
         // Create mock PerformanceFeeTracker and set the fee value due
         address performanceFeeTracker = setMockPerformanceFee({_feeHandler: address(feeHandler), _admin: admin});
         performanceFeeTracker_mockSettlePerformanceFee({
-            _performanceFeeTracker: performanceFeeTracker,
-            _valueDue: feeValueDue
+            _performanceFeeTracker: performanceFeeTracker, _valueDue: feeValueDue
         });
 
         vm.expectCall({
@@ -390,15 +384,13 @@ contract FeeHandlerTest is Test, FeeHandlerTestHelpers {
         // Create mock ManagementFeeTracker and set the fee value due
         address managementFeeTracker = setMockManagementFee({_feeHandler: address(feeHandler), _admin: admin});
         managementFeeTracker_mockSettleManagementFee({
-            _managementFeeTracker: managementFeeTracker,
-            _valueDue: managementFeeValueDue
+            _managementFeeTracker: managementFeeTracker, _valueDue: managementFeeValueDue
         });
 
         // Create mock PerformanceFeeTracker and set the fee value due
         address performanceFeeTracker = setMockPerformanceFee({_feeHandler: address(feeHandler), _admin: admin});
         performanceFeeTracker_mockSettlePerformanceFee({
-            _performanceFeeTracker: performanceFeeTracker,
-            _valueDue: performanceFeeValueDue
+            _performanceFeeTracker: performanceFeeTracker, _valueDue: performanceFeeValueDue
         });
 
         vm.expectCall({
@@ -416,13 +408,11 @@ contract FeeHandlerTest is Test, FeeHandlerTestHelpers {
 
         vm.expectEmit(address(feeHandler));
         emit FeeHandler.ManagementFeeSettled({
-            recipient: feeHandler.getManagementFeeRecipient(),
-            value: managementFeeValueDue
+            recipient: feeHandler.getManagementFeeRecipient(), value: managementFeeValueDue
         });
         vm.expectEmit(address(feeHandler));
         emit FeeHandler.PerformanceFeeSettled({
-            recipient: feeHandler.getPerformanceFeeRecipient(),
-            value: performanceFeeValueDue
+            recipient: feeHandler.getPerformanceFeeRecipient(), value: performanceFeeValueDue
         });
 
         vm.prank(address(valuationHandler));

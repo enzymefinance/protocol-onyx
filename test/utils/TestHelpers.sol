@@ -73,9 +73,7 @@ contract TestHelpers is Test {
         vm.mockCall(_positionTracker, IPositionTracker.getPositionValue.selector, abi.encode(_value));
     }
 
-    function valuationHandler_mockGetDefaultSharePrice(address _valuationHandler, uint256 _defaultSharePrice)
-        internal
-    {
+    function valuationHandler_mockGetDefaultSharePrice(address _valuationHandler, uint256 _defaultSharePrice) internal {
         vm.mockCall(_valuationHandler, IValuationHandler.getDefaultSharePrice.selector, abi.encode(_defaultSharePrice));
     }
 

@@ -11,8 +11,9 @@
 
 pragma solidity ^0.8.0;
 
-import {ContinuousFlatRatePerformanceFeeTracker} from
-    "src/components/fees/performance-fee-trackers/ContinuousFlatRatePerformanceFeeTracker.sol";
+import {
+    ContinuousFlatRatePerformanceFeeTracker
+} from "src/components/fees/performance-fee-trackers/ContinuousFlatRatePerformanceFeeTracker.sol";
 import {ComponentHarnessMixin} from "test/harnesses/utils/ComponentHarnessMixin.sol";
 
 contract ContinuousFlatRatePerformanceFeeTrackerHarness is

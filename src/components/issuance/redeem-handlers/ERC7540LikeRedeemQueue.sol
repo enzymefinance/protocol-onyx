@@ -97,8 +97,7 @@ contract ERC7540LikeRedeemQueue is IERC7540LikeRedeemHandler, ERC7540LikeIssuanc
 
     constructor() {
         StorageHelpersLib.verifyErc7201LocationForId({
-            _location: REDEEM_QUEUE_STORAGE_LOCATION,
-            _id: REDEEM_QUEUE_STORAGE_LOCATION_ID
+            _location: REDEEM_QUEUE_STORAGE_LOCATION, _id: REDEEM_QUEUE_STORAGE_LOCATION_ID
         });
     }
 
@@ -141,10 +140,7 @@ contract ERC7540LikeRedeemQueue is IERC7540LikeRedeemHandler, ERC7540LikeIssuanc
     /// @inheritdoc IERC7540LikeRedeemHandler
     /// @dev _controller, _owner, and msg.sender must all be the same. Support for distinct values may be added later.
     /// This helps prevent situations like unauthorized share transfers via request cancellation.
-    function requestRedeem(uint256 _shares, address _controller, address _owner)
-        external
-        returns (uint256 requestId_)
-    {
+    function requestRedeem(uint256 _shares, address _controller, address _owner) external returns (uint256 requestId_) {
         require(_owner == msg.sender, ERC7540LikeRedeemQueue__RequestRedeem__OwnerNotSender());
         require(_owner == _controller, ERC7540LikeRedeemQueue__RequestRedeem__OwnerNotController());
         require(_shares > 0, ERC7540LikeRedeemQueue__RequestRedeem__ZeroShares());
@@ -162,11 +158,7 @@ contract ERC7540LikeRedeemQueue is IERC7540LikeRedeemHandler, ERC7540LikeIssuanc
 
         // Required event for ERC7540Like
         emit RedeemRequest({
-            controller: _controller,
-            owner: _owner,
-            requestId: requestId_,
-            sender: msg.sender,
-            shares: _shares
+            controller: _controller, owner: _owner, requestId: requestId_, sender: msg.sender, shares: _shares
         });
     }
 
@@ -197,8 +189,7 @@ contract ERC7540LikeRedeemQueue is IERC7540LikeRedeemHandler, ERC7540LikeIssuanc
 
             // Calculate the asset amount due for remaining shares post-fee
             uint256 valueDue = ValueHelpersLib.calcValueOfSharesAmount({
-                _valuePerShare: sharePriceInValueAsset,
-                _sharesAmount: request.sharesAmount - feeSharesAmount
+                _valuePerShare: sharePriceInValueAsset, _sharesAmount: request.sharesAmount - feeSharesAmount
             });
             uint256 userAssets = valuationHandler.convertValueToAssetAmount({_value: valueDue, _asset: asset()});
             require(userAssets > 0, ERC7540LikeRedeemQueue__ExecuteRedeemRequests__ZeroAssets());

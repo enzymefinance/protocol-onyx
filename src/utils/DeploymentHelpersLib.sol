@@ -19,10 +19,7 @@ library DeploymentHelpersLib {
     /// @param _nonce A unique nonce
     /// @return deployedAddress_ The address of the deployed contract
     /// @dev _nonce MUST be unique for the implementing contract on this chain
-    function deployAtUniqueAddress(bytes memory _bytecode, uint256 _nonce)
-        internal
-        returns (address deployedAddress_)
-    {
+    function deployAtUniqueAddress(bytes memory _bytecode, uint256 _nonce) internal returns (address deployedAddress_) {
         bytes32 salt = keccak256(abi.encode(_nonce, block.chainid));
 
         return Create2.deploy({amount: 0, salt: salt, bytecode: _bytecode});

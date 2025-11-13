@@ -57,8 +57,7 @@ contract ERC7540LikeIssuanceBase is ComponentHelpersMixin {
 
     constructor() {
         StorageHelpersLib.verifyErc7201LocationForId({
-            _location: ERC7540_LIKE_ISSUANCE_BASE_STORAGE_LOCATION,
-            _id: ERC7540_LIKE_ISSUANCE_BASE_STORAGE_LOCATION_ID
+            _location: ERC7540_LIKE_ISSUANCE_BASE_STORAGE_LOCATION, _id: ERC7540_LIKE_ISSUANCE_BASE_STORAGE_LOCATION_ID
         });
     }
 

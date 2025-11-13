@@ -113,8 +113,7 @@ contract ValuationHandler is IValuationHandler, ComponentHelpersMixin {
 
     constructor() {
         StorageHelpersLib.verifyErc7201LocationForId({
-            _location: VALUATION_HANDLER_STORAGE_LOCATION,
-            _id: VALUATION_HANDLER_STORAGE_LOCATION_ID
+            _location: VALUATION_HANDLER_STORAGE_LOCATION, _id: VALUATION_HANDLER_STORAGE_LOCATION_ID
         });
     }
 
@@ -277,8 +276,7 @@ contract ValuationHandler is IValuationHandler, ComponentHelpersMixin {
         uint256 sharesSupply = shares.totalSupply();
         if (sharesSupply > 0) {
             netShareValue_ = ValueHelpersLib.calcValuePerShare({
-                _totalValue: totalPositionsValue - totalFeesOwed,
-                _totalSharesAmount: sharesSupply
+                _totalValue: totalPositionsValue - totalFeesOwed, _totalSharesAmount: sharesSupply
             });
         }
         // else: no shares, netShareValue_ = 0

@@ -125,8 +125,9 @@ library ValueHelpersLib {
         uint256 _oracleTimestampTolerance,
         bool _oracleQuotedInBase
     ) internal view returns (uint256 quoteAmount_) {
-        uint256 oracleRate =
-            parseValidatedRateFromAggregatorV3({_aggregator: _oracle, _timestampTolerance: _oracleTimestampTolerance});
+        uint256 oracleRate = parseValidatedRateFromAggregatorV3({
+            _aggregator: _oracle, _timestampTolerance: _oracleTimestampTolerance
+        });
 
         return convert({
             _baseAmount: _baseAmount,

@@ -162,18 +162,12 @@ contract OpenAccessLimitedCallForwarderTest is TestHelpers {
         // pre-assert events
         vm.expectEmit();
         emit OpenAccessLimitedCallForwarder.CallExecuted({
-            sender: caller,
-            target: address(callTarget1),
-            data: callData1,
-            value: value1
+            sender: caller, target: address(callTarget1), data: callData1, value: value1
         });
 
         vm.expectEmit();
         emit OpenAccessLimitedCallForwarder.CallExecuted({
-            sender: caller,
-            target: address(callTarget2),
-            data: callData2,
-            value: value2
+            sender: caller, target: address(callTarget2), data: callData2, value: value2
         });
 
         // call

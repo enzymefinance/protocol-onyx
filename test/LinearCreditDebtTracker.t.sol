@@ -75,11 +75,7 @@ contract LinearCreditDebtTrackerTest is Test, TestHelpers {
 
         vm.expectEmit();
         emit LinearCreditDebtTracker.ItemAdded({
-            id: expectedId,
-            totalValue: _totalValue,
-            start: _start,
-            duration: _duration,
-            description: description
+            id: expectedId, totalValue: _totalValue, start: _start, duration: _duration, description: description
         });
 
         vm.prank(admin);
@@ -270,10 +266,7 @@ contract LinearCreditDebtTrackerTest is Test, TestHelpers {
             _description: "test"
         });
         uint24 pastItemId = tracker.addItem({
-            _totalValue: pastItemTotalValue,
-            _start: uint40(currentTime - 1000),
-            _duration: 999,
-            _description: "test"
+            _totalValue: pastItemTotalValue, _start: uint40(currentTime - 1000), _duration: 999, _description: "test"
         });
         tracker.updateSettledValue({_id: futureItemId, _totalSettled: futureItemTotalSettled});
         tracker.updateSettledValue({_id: midwayItemId, _totalSettled: midwayItemTotalSettled});

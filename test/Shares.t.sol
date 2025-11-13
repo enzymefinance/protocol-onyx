@@ -409,9 +409,7 @@ contract SharesTest is Test, TestHelpers {
         shares.setValuationHandler(valuationHandler);
 
         valuationHandler_mockGetSharePrice({
-            _valuationHandler: valuationHandler,
-            _sharePrice: expectedSharePrice,
-            _timestamp: expectedTimestamp
+            _valuationHandler: valuationHandler, _sharePrice: expectedSharePrice, _timestamp: expectedTimestamp
         });
 
         (uint256 price, uint256 timestamp) = shares.sharePrice();
@@ -430,9 +428,7 @@ contract SharesTest is Test, TestHelpers {
         shares.setValuationHandler(valuationHandler);
 
         valuationHandler_mockGetShareValue({
-            _valuationHandler: valuationHandler,
-            _shareValue: expectedSharePrice,
-            _timestamp: expectedTimestamp
+            _valuationHandler: valuationHandler, _shareValue: expectedSharePrice, _timestamp: expectedTimestamp
         });
 
         (uint256 price, uint256 timestamp) = shares.shareValue();

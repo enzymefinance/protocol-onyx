@@ -92,8 +92,7 @@ contract LinearCreditDebtTracker is IPositionTracker, ComponentHelpersMixin {
 
     constructor() {
         StorageHelpersLib.verifyErc7201LocationForId({
-            _location: LINEAR_CREDIT_DEBT_TRACKER_STORAGE_LOCATION,
-            _id: LINEAR_CREDIT_DEBT_TRACKER_STORAGE_LOCATION_ID
+            _location: LINEAR_CREDIT_DEBT_TRACKER_STORAGE_LOCATION, _id: LINEAR_CREDIT_DEBT_TRACKER_STORAGE_LOCATION_ID
         });
     }
 
@@ -123,7 +122,9 @@ contract LinearCreditDebtTracker is IPositionTracker, ComponentHelpersMixin {
         $.idToItem[id_] =
             Item({totalValue: _totalValue, settledValue: 0, id: id_, index: index, start: _start, duration: _duration});
 
-        emit ItemAdded({id: id_, totalValue: _totalValue, start: _start, duration: _duration, description: _description});
+        emit ItemAdded({
+            id: id_, totalValue: _totalValue, start: _start, duration: _duration, description: _description
+        });
     }
 
     /// @notice Removes an existing line-item from the tracker
