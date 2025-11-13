@@ -13,7 +13,8 @@ exclude_lints = [
     "pascal-case-struct",
     "mixed-case-function",
     "mixed-case-variable",
-    "asm-keccak256"
+    "asm-keccak256",
+    "unwrapped-modifier-logic"
 ]
 ignore = [
     "src/interfaces/external/**/*.sol",

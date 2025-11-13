@@ -181,6 +181,7 @@ contract LinearCreditDebtTracker is IPositionTracker, ComponentHelpersMixin {
 
         uint256 lapsed = block.timestamp - item.start;
 
+        /// forge-lint: disable-next-line(unsafe-typecast)
         int256 proRatedValue = item.totalValue * int256(lapsed) / int256(uint256(item.duration));
 
         return item.settledValue + proRatedValue;

@@ -157,6 +157,7 @@ library ValueHelpersLib {
             ValueHelpersLib__ParseValidatedRateFromAggregatorV3__MinTimestampNotMet(timestamp)
         );
 
+        /// forge-lint: disable-next-line(unsafe-typecast)
         return uint256(answer);
     }
 }
