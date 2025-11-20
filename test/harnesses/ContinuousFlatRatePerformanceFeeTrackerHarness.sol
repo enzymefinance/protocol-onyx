@@ -21,4 +21,16 @@ contract ContinuousFlatRatePerformanceFeeTrackerHarness is
     ComponentHarnessMixin
 {
     constructor(address _shares) ComponentHarnessMixin(_shares) {}
+
+    function exposed_calcHurdleAdjustedHwm(uint256 _hwm, uint256 _hwmTimestamp, int16 _hurdleRate)
+        external
+        view
+        returns (uint256)
+    {
+        return __calcHurdleAdjustedHwm({_hwm: _hwm, _hwmTimestamp: _hwmTimestamp, _hurdleRate: _hurdleRate});
+    }
+
+    function exposed_storage_highWaterMark_set(uint128 _hwm) external {
+        __getPerformanceFeeTrackerStorage().highWaterMark = _hwm;
+    }
 }
