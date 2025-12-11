@@ -223,6 +223,7 @@ contract ContinuousFlatRatePerformanceFeeTracker is IPerformanceFeeTracker, FeeT
         returns (uint256 hurdleAdjustedHwm_)
     {
         require(_hurdleRate > 0, ContinuousFlatRatePerformanceFeeTracker__CalcHurdleAdjustedHwm__NoHurdleRate());
+        // forge-lint: disable-next-line(unsafe-typecast)
         uint256 hurdleRateUint = uint256(uint16(_hurdleRate));
 
         // Calculate time elapsed since HWM was last updated
