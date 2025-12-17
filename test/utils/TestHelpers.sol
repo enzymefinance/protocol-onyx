@@ -16,6 +16,7 @@ import {Test} from "forge-std/Test.sol";
 import {IFeeHandler} from "src/interfaces/IFeeHandler.sol";
 import {IPositionTracker} from "src/components/value/position-trackers/IPositionTracker.sol";
 import {IValuationHandler} from "src/interfaces/IValuationHandler.sol";
+import {IAddressList} from "src/infra/lists/address-list/IAddressList.sol";
 import {Shares} from "src/shares/Shares.sol";
 
 import {BlankFeeHandler, BlankPositionTracker} from "test/mocks/Blanks.sol";
@@ -32,6 +33,10 @@ contract TestHelpers is Test {
     }
 
     // MOCKS: FUNCTION CALLS
+
+    function addressList_mockIsInList(address _addressList, address _item, bool _isInList) internal {
+        vm.mockCall(_addressList, abi.encodeWithSelector(IAddressList.isInList.selector, _item), abi.encode(_isInList));
+    }
 
     function feeHandler_mockGetTotalValueOwed(address _feeHandler, uint256 _totalValueOwed) internal {
         vm.mockCall(_feeHandler, IFeeHandler.getTotalValueOwed.selector, abi.encode(_totalValueOwed));

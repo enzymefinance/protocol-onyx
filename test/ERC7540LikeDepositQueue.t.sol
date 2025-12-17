@@ -21,6 +21,7 @@ import {Shares} from "src/shares/Shares.sol";
 
 import {ERC7540LikeDepositQueueHarness} from "test/harnesses/ERC7540LikeDepositQueueHarness.sol";
 import {ValuationHandlerHarness} from "test/harnesses/ValuationHandlerHarness.sol";
+import {BlankAddressList} from "test/mocks/Blanks.sol";
 import {MockChainlinkAggregator} from "test/mocks/MockChainlinkAggregator.sol";
 import {MockERC20} from "test/mocks/MockERC20.sol";
 import {TestHelpers} from "test/utils/TestHelpers.sol";
@@ -55,53 +56,53 @@ contract ERC7540LikeDepositQueueTest is TestHelpers {
     // Config (access: admin or owner)
     //==================================================================================================================
 
-    function test_addAllowedController_fail_notAdminOrOwner() public {
+    function test_addDepositControllerToInternalAllowlist_fail_notAdminOrOwner() public {
         address randomUser = makeAddr("randomUser");
         address controller = makeAddr("controller");
 
         vm.expectRevert(ComponentHelpersMixin.ComponentHelpersMixin__OnlyAdminOrOwner__Unauthorized.selector);
 
         vm.prank(randomUser);
-        depositQueue.addAllowedController(controller);
+        depositQueue.addDepositControllerToInternalAllowlist(controller);
     }
 
-    function test_addAllowedController_success() public {
+    function test_addDepositControllerToInternalAllowlist_success() public {
         address controller = makeAddr("controller");
 
-        vm.expectEmit();
+        vm.expectEmit(address(depositQueue));
         emit ERC7540LikeDepositQueue.AllowedControllerAdded({controller: controller});
 
         vm.prank(admin);
-        depositQueue.addAllowedController(controller);
+        depositQueue.addDepositControllerToInternalAllowlist(controller);
 
-        assert(depositQueue.isInAllowedControllerList(controller));
+        assertTrue(depositQueue.isInDepositControllerInternalAllowlist(controller), "controller not in list");
     }
 
-    function test_removeAllowedController_fail_notAdminOrOwner() public {
+    function test_removeDepositControllerFromInternalAllowlist_fail_notAdminOrOwner() public {
         address randomUser = makeAddr("randomUser");
         address controller = makeAddr("controller");
 
         vm.expectRevert(ComponentHelpersMixin.ComponentHelpersMixin__OnlyAdminOrOwner__Unauthorized.selector);
 
         vm.prank(randomUser);
-        depositQueue.removeAllowedController(controller);
+        depositQueue.removeDepositControllerFromInternalAllowlist(controller);
     }
 
-    function test_removeAllowedController_success() public {
+    function test_removeDepositControllerFromInternalAllowlist_success() public {
         address controller = makeAddr("controller");
 
         vm.prank(admin);
-        depositQueue.addAllowedController(controller);
+        depositQueue.addDepositControllerToInternalAllowlist(controller);
 
-        assert(depositQueue.isInAllowedControllerList(controller));
+        assertTrue(depositQueue.isInDepositControllerInternalAllowlist(controller), "controller not in list");
 
-        vm.expectEmit();
+        vm.expectEmit(address(depositQueue));
         emit ERC7540LikeDepositQueue.AllowedControllerRemoved({controller: controller});
 
         vm.prank(admin);
-        depositQueue.removeAllowedController(controller);
+        depositQueue.removeDepositControllerFromInternalAllowlist(controller);
 
-        assert(!depositQueue.isInAllowedControllerList(controller));
+        assertFalse(depositQueue.isInDepositControllerInternalAllowlist(controller), "controller still in list");
     }
 
     function test_setDepositMinRequestDuration_fail_notAdminOrOwner() public {
@@ -117,19 +118,19 @@ contract ERC7540LikeDepositQueueTest is TestHelpers {
     function test_setDepositMinRequestDuration_success() public {
         uint24 minRequestDuration = 123;
 
-        vm.expectEmit();
+        vm.expectEmit(address(depositQueue));
         emit ERC7540LikeDepositQueue.DepositMinRequestDurationSet(minRequestDuration);
 
         vm.prank(admin);
         depositQueue.setDepositMinRequestDuration(minRequestDuration);
 
-        assertEq(depositQueue.getDepositMinRequestDuration(), minRequestDuration);
+        assertEq(depositQueue.getDepositMinRequestDuration(), minRequestDuration, "min request duration not set");
     }
 
     function test_setDepositRestriction_fail_notAdminOrOwner() public {
         address randomUser = makeAddr("randomUser");
         ERC7540LikeDepositQueue.DepositRestriction restriction =
-        ERC7540LikeDepositQueue.DepositRestriction.ControllerAllowlist;
+        ERC7540LikeDepositQueue.DepositRestriction.ControllerAllowlistInternal;
 
         vm.expectRevert(ComponentHelpersMixin.ComponentHelpersMixin__OnlyAdminOrOwner__Unauthorized.selector);
 
@@ -139,15 +140,37 @@ contract ERC7540LikeDepositQueueTest is TestHelpers {
 
     function test_setDepositRestriction_success() public {
         ERC7540LikeDepositQueue.DepositRestriction restriction =
-        ERC7540LikeDepositQueue.DepositRestriction.ControllerAllowlist;
+        ERC7540LikeDepositQueue.DepositRestriction.ControllerAllowlistInternal;
 
-        vm.expectEmit();
+        vm.expectEmit(address(depositQueue));
         emit ERC7540LikeDepositQueue.DepositRestrictionSet(restriction);
 
         vm.prank(admin);
         depositQueue.setDepositRestriction(restriction);
 
-        assertEq(uint8(depositQueue.getDepositRestriction()), uint8(restriction));
+        assertEq(uint8(depositQueue.getDepositRestriction()), uint8(restriction), "restriction not set");
+    }
+
+    function test_setDepositControllerExternalAllowlist_fail_notAdminOrOwner() public {
+        address randomUser = makeAddr("randomUser");
+        address allowlist = address(new BlankAddressList());
+
+        vm.expectRevert(ComponentHelpersMixin.ComponentHelpersMixin__OnlyAdminOrOwner__Unauthorized.selector);
+
+        vm.prank(randomUser);
+        depositQueue.setDepositControllerExternalAllowlist(allowlist);
+    }
+
+    function test_setDepositControllerExternalAllowlist_success() public {
+        address allowlist = address(new BlankAddressList());
+
+        vm.expectEmit(address(depositQueue));
+        emit ERC7540LikeDepositQueue.DepositControllerExternalAllowlistSet(allowlist);
+
+        vm.prank(admin);
+        depositQueue.setDepositControllerExternalAllowlist(allowlist);
+
+        assertEq(address(depositQueue.getDepositControllerExternalAllowlist()), allowlist, "allowlist not set");
     }
 
     //==================================================================================================================
@@ -216,18 +239,22 @@ contract ERC7540LikeDepositQueueTest is TestHelpers {
 
         uint256 preControllerBalance = depositAsset.balanceOf(controller);
 
-        vm.expectEmit();
+        vm.expectEmit(address(depositQueue));
         emit IERC7540LikeDepositHandler.DepositRequestCanceled(_requestId);
 
         vm.prank(controller);
         uint256 assetAmountRefunded = depositQueue.cancelDeposit(_requestId);
 
         // Deposit asset should be refunded
-        assertEq(assetAmountRefunded, depositAssetAmount);
-        assertEq(depositAsset.balanceOf(controller), preControllerBalance + depositAssetAmount);
+        assertEq(assetAmountRefunded, depositAssetAmount, "incorrect refund amount return value");
+        assertEq(
+            depositAsset.balanceOf(controller),
+            preControllerBalance + depositAssetAmount,
+            "refund not transferred to controller"
+        );
 
         // Request should be zeroed out
-        assertEq(depositQueue.getDepositRequest(_requestId).controller, address(0));
+        assertEq(depositQueue.getDepositRequest(_requestId).controller, address(0), "request not removed");
     }
 
     function test_requestDeposit_fail_ownerNotSender() public {
@@ -263,15 +290,38 @@ contract ERC7540LikeDepositQueueTest is TestHelpers {
         depositQueue.requestDeposit({_assets: 0, _controller: controller, _owner: tokenOwner});
     }
 
-    function test_requestDeposit_fail_controllerNotAllowed() public {
+    function test_requestDeposit_fail_controllerNotAllowedInternal() public {
         address controller = makeAddr("controller");
         address tokenOwner = controller;
         uint256 assetAmount = 123;
         __test_requestDeposit_setup({_tokenOwner: tokenOwner});
 
-        // Restrict controllers to allowlist
+        // Restrict controllers to internal allowlist
         vm.prank(admin);
-        depositQueue.setDepositRestriction(ERC7540LikeDepositQueue.DepositRestriction.ControllerAllowlist);
+        depositQueue.setDepositRestriction(ERC7540LikeDepositQueue.DepositRestriction.ControllerAllowlistInternal);
+
+        vm.expectRevert(ERC7540LikeDepositQueue.ERC7540LikeDepositQueue__RequestDeposit__ControllerNotAllowed.selector);
+        vm.prank(tokenOwner);
+        depositQueue.requestDeposit({_assets: assetAmount, _controller: controller, _owner: tokenOwner});
+    }
+
+    function test_requestDeposit_fail_controllerNotAllowedExternal() public {
+        address controller = makeAddr("controller");
+        address tokenOwner = controller;
+        uint256 assetAmount = 123;
+        __test_requestDeposit_setup({_tokenOwner: tokenOwner});
+
+        // Create an external allowlist and set it
+        address allowlist = address(new BlankAddressList());
+        vm.prank(admin);
+        depositQueue.setDepositControllerExternalAllowlist(allowlist);
+
+        // Restrict controllers to external allowlist
+        vm.prank(admin);
+        depositQueue.setDepositRestriction(ERC7540LikeDepositQueue.DepositRestriction.ControllerAllowlistExternal);
+
+        // Mock the external allowlist to return false for the controller
+        addressList_mockIsInList({_addressList: allowlist, _item: controller, _isInList: false});
 
         vm.expectRevert(ERC7540LikeDepositQueue.ERC7540LikeDepositQueue__RequestDeposit__ControllerNotAllowed.selector);
         vm.prank(tokenOwner);
@@ -289,22 +339,23 @@ contract ERC7540LikeDepositQueueTest is TestHelpers {
             _tokenOwner: tokenOwner,
             _assetAmount: 123,
             _referred: false,
-            _useControllerAllowlist: false
+            _depositRestriction: ERC7540LikeDepositQueue.DepositRestriction.None
         });
+        // Use internal controller allowlist
         __test_requestDeposit_success({
             _controller: controller,
             _tokenOwner: tokenOwner,
             _assetAmount: 456,
             _referred: true,
-            _useControllerAllowlist: false
+            _depositRestriction: ERC7540LikeDepositQueue.DepositRestriction.ControllerAllowlistInternal
         });
-        // For final request, use controller allowlist
+        // Use external controller allowlist
         __test_requestDeposit_success({
             _controller: controller,
             _tokenOwner: tokenOwner,
             _assetAmount: 789,
             _referred: false,
-            _useControllerAllowlist: true
+            _depositRestriction: ERC7540LikeDepositQueue.DepositRestriction.ControllerAllowlistExternal
         });
     }
 
@@ -313,14 +364,39 @@ contract ERC7540LikeDepositQueueTest is TestHelpers {
         address _tokenOwner,
         uint256 _assetAmount,
         bool _referred,
-        bool _useControllerAllowlist
+        ERC7540LikeDepositQueue.DepositRestriction _depositRestriction
     ) internal {
-        if (_useControllerAllowlist) {
-            vm.prank(admin);
-            depositQueue.setDepositRestriction(ERC7540LikeDepositQueue.DepositRestriction.ControllerAllowlist);
+        if (_depositRestriction == ERC7540LikeDepositQueue.DepositRestriction.ControllerAllowlistInternal) {
+            // Add the controller to the internal allowlist
+            if (!depositQueue.isInDepositControllerInternalAllowlist(_controller)) {
+                vm.prank(admin);
+                depositQueue.addDepositControllerToInternalAllowlist(_controller);
+            }
 
+            // Set the deposit restriction to internal allowlist
             vm.prank(admin);
-            depositQueue.addAllowedController(_controller);
+            depositQueue.setDepositRestriction(ERC7540LikeDepositQueue.DepositRestriction.ControllerAllowlistInternal);
+        } else if (_depositRestriction == ERC7540LikeDepositQueue.DepositRestriction.ControllerAllowlistExternal) {
+            // Remove the controller from the internal allowlist
+            vm.prank(admin);
+            if (depositQueue.isInDepositControllerInternalAllowlist(_controller)) {
+                vm.prank(admin);
+                depositQueue.removeDepositControllerFromInternalAllowlist(_controller);
+            }
+
+            // Create a new external allowlist
+            address addressList = address(new BlankAddressList());
+            addressList_mockIsInList({_addressList: addressList, _item: _controller, _isInList: true});
+
+            // Set the deposit restriction to external allowlist and set the external allowlist
+            vm.startPrank(admin);
+            depositQueue.setDepositRestriction(ERC7540LikeDepositQueue.DepositRestriction.ControllerAllowlistExternal);
+            depositQueue.setDepositControllerExternalAllowlist(addressList);
+            vm.stopPrank();
+        } else if (_depositRestriction == ERC7540LikeDepositQueue.DepositRestriction.None) {
+            // Do nothing
+        } else {
+            revert("Invalid deposit restriction");
         }
 
         uint256 expectedRequestId = depositQueue.getDepositLastId() + 1;
@@ -330,7 +406,7 @@ contract ERC7540LikeDepositQueueTest is TestHelpers {
         uint256 preRequestQueueAssetBalance = asset.balanceOf(address(depositQueue));
         uint256 preRequestTokenOwnerAssetBalance = asset.balanceOf(_tokenOwner);
 
-        vm.expectEmit();
+        vm.expectEmit(address(depositQueue));
         emit IERC7540LikeDepositHandler.DepositRequest({
             controller: _controller,
             owner: _tokenOwner,
@@ -342,7 +418,7 @@ contract ERC7540LikeDepositQueueTest is TestHelpers {
         if (_referred) {
             bytes32 referrer = "test";
 
-            vm.expectEmit();
+            vm.expectEmit(address(depositQueue));
             emit IERC7540LikeDepositHandler.DepositRequestReferred({requestId: expectedRequestId, referrer: referrer});
 
             vm.prank(_tokenOwner);
@@ -356,13 +432,21 @@ contract ERC7540LikeDepositQueueTest is TestHelpers {
 
         // Assert request storage
         ERC7540LikeDepositQueue.DepositRequestInfo memory request = depositQueue.getDepositRequest(expectedRequestId);
-        assertEq(request.controller, _controller);
-        assertEq(request.assetAmount, _assetAmount);
-        assertEq(request.canCancelTime, expectedCanCancelTime);
+        assertEq(request.controller, _controller, "incorrect controller");
+        assertEq(request.assetAmount, _assetAmount, "incorrect asset amount");
+        assertEq(request.canCancelTime, expectedCanCancelTime, "incorrect can cancel time");
 
         // Assert asset transfer
-        assertEq(asset.balanceOf(address(depositQueue)), preRequestQueueAssetBalance + _assetAmount);
-        assertEq(asset.balanceOf(_tokenOwner), preRequestTokenOwnerAssetBalance - _assetAmount);
+        assertEq(
+            asset.balanceOf(address(depositQueue)),
+            preRequestQueueAssetBalance + _assetAmount,
+            "incorrect final queue asset balance"
+        );
+        assertEq(
+            asset.balanceOf(_tokenOwner),
+            preRequestTokenOwnerAssetBalance - _assetAmount,
+            "incorrect final token owner asset balance"
+        );
     }
 
     function __test_requestDeposit_setup(address _tokenOwner) internal {
@@ -476,26 +560,26 @@ contract ERC7540LikeDepositQueueTest is TestHelpers {
         requestIdsToExecute[1] = 3;
 
         // Pre-assert events
-        vm.expectEmit();
+        vm.expectEmit(address(depositQueue));
         emit IERC7540LikeDepositHandler.Deposit({
             sender: request1Controller,
             owner: request1Controller,
             assets: request1AssetAmount,
             shares: request1ExpectedSharesAmount
         });
-        vm.expectEmit();
+        vm.expectEmit(address(depositQueue));
         emit IERC7540LikeDepositHandler.DepositRequestExecuted({
             requestId: 1, sharesAmount: request1ExpectedSharesAmount
         });
 
-        vm.expectEmit();
+        vm.expectEmit(address(depositQueue));
         emit IERC7540LikeDepositHandler.Deposit({
             sender: request3Controller,
             owner: request3Controller,
             assets: request3AssetAmount,
             shares: request3ExpectedSharesAmount
         });
-        vm.expectEmit();
+        vm.expectEmit(address(depositQueue));
         emit IERC7540LikeDepositHandler.DepositRequestExecuted({
             requestId: 3, sharesAmount: request3ExpectedSharesAmount
         });
@@ -505,14 +589,26 @@ contract ERC7540LikeDepositQueueTest is TestHelpers {
         depositQueue.executeDepositRequests({_requestIds: requestIdsToExecute});
 
         // Assert shares sent
-        assertEq(shares.balanceOf(request1Controller), request1ExpectedSharesAmount);
-        assertEq(shares.balanceOf(request3Controller), request3ExpectedSharesAmount);
+        assertEq(
+            shares.balanceOf(request1Controller),
+            request1ExpectedSharesAmount,
+            "incorrect final shares balance for request 1"
+        );
+        assertEq(
+            shares.balanceOf(request3Controller),
+            request3ExpectedSharesAmount,
+            "incorrect final shares balance for request 3"
+        );
 
         // Assert assets sent to Shares
-        assertEq(IERC20(asset).balanceOf(address(shares)), request1AssetAmount + request3AssetAmount);
+        assertEq(
+            IERC20(asset).balanceOf(address(shares)),
+            request1AssetAmount + request3AssetAmount,
+            "incorrect final asset balance in Shares"
+        );
 
         // Assert requests are removed
-        assertEq(depositQueue.getDepositRequest(1).controller, address(0));
-        assertEq(depositQueue.getDepositRequest(3).controller, address(0));
+        assertEq(depositQueue.getDepositRequest(1).controller, address(0), "request 1 not removed");
+        assertEq(depositQueue.getDepositRequest(3).controller, address(0), "request 3 not removed");
     }
 }

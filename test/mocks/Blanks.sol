@@ -17,8 +17,13 @@ pragma solidity ^0.8.0;
 import {IManagementFeeTracker} from "src/components/fees/interfaces/IManagementFeeTracker.sol";
 import {IPerformanceFeeTracker} from "src/components/fees/interfaces/IPerformanceFeeTracker.sol";
 import {IPositionTracker} from "src/components/value/position-trackers/IPositionTracker.sol";
+import {IAddressList} from "src/infra/lists/address-list/IAddressList.sol";
 import {IFeeHandler} from "src/interfaces/IFeeHandler.sol";
 import {ISharesTransferValidator} from "src/interfaces/ISharesTransferValidator.sol";
+
+contract BlankAddressList is IAddressList {
+    function isInList(address _item) external view returns (bool isInList_) {}
+}
 
 contract BlankFeeHandler is IFeeHandler {
     function getTotalValueOwed() external view returns (uint256 totalValueOwed_) {}
