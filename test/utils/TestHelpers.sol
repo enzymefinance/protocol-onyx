@@ -21,7 +21,9 @@ import {Shares} from "src/shares/Shares.sol";
 
 import {BlankFeeHandler, BlankPositionTracker} from "test/mocks/Blanks.sol";
 
-contract TestHelpers is Test {
+import {Constants} from "test/utils/Constants.sol";
+
+contract TestHelpers is Constants, Test {
     function createShares() internal returns (Shares shares_) {
         address owner = makeAddr("owner");
         string memory name = "Test Shares";
@@ -107,6 +109,24 @@ contract TestHelpers is Test {
         Shares(_shares).setFeeHandler(feeHandler_);
 
         feeHandler_mockGetTotalValueOwed({_feeHandler: feeHandler_, _totalValueOwed: _totalValueOwed});
+    }
+
+    // NETWORK SELECTION
+
+    function createSelectEthereumFork() internal {
+        vm.createSelectFork("mainnet", ETHEREUM_BLOCK_LATEST);
+    }
+
+    function createSelectBaseChainFork() internal {
+        vm.createSelectFork("base", BASE_BLOCK_LATEST);
+    }
+
+    function createSelectArbitrumFork() internal {
+        vm.createSelectFork("arbitrum", ARBITRUM_BLOCK_LATEST);
+    }
+
+    function createSelectPlumeFork() internal {
+        vm.createSelectFork(vm.envString("ETHEREUM_NODE_PLUME"), PLUME_BLOCK_LATEST);
     }
 
     // MISC

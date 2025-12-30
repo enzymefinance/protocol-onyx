@@ -15,6 +15,11 @@ jobs:
 
     name: Foundry project
     runs-on: ubuntu-latest
+    env:
+      ETHEREUM_NODE_MAINNET: ${{ secrets.ETHEREUM_NODE_MAINNET }}
+      ETHEREUM_NODE_ARBITRUM: ${{ secrets.ETHEREUM_NODE_ARBITRUM }}
+      ETHEREUM_NODE_BASE: ${{ secrets.ETHEREUM_NODE_BASE }}
+      ETHEREUM_NODE_PLUME: ${{ secrets.ETHEREUM_NODE_PLUME }}
     steps:
       - uses: actions/checkout@v4
         with:

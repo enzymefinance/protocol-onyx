@@ -7,6 +7,12 @@ optimizer = true
 optimizer_runs = 200
 fs_permissions = [{ access = "write", path = "./deploy/"}]
 
+[rpc_endpoints]
+mainnet = "${ETHEREUM_NODE_MAINNET}"
+arbitrum = "${ETHEREUM_NODE_ARBITRUM}"
+base = "${ETHEREUM_NODE_BASE}"
+plume = "${ETHEREUM_NODE_PLUME}"
+
 [lint]
 # Several lints fail on acronyms like "ERC" instead of "Erc", so we exclude those
 exclude_lints = [
