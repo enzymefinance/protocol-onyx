@@ -8,10 +8,12 @@ import {BeaconFactory} from "src/factories/BeaconFactory.sol";
 import {ComponentBeaconFactory} from "src/factories/ComponentBeaconFactory.sol";
 import {Shares} from "src/shares/Shares.sol";
 import {FeeHandler} from "src/components/fees/FeeHandler.sol";
-import {ContinuousFlatRateManagementFeeTracker} from
-    "src/components/fees/management-fee-trackers/ContinuousFlatRateManagementFeeTracker.sol";
-import {ContinuousFlatRatePerformanceFeeTracker} from
-    "src/components/fees/performance-fee-trackers/ContinuousFlatRatePerformanceFeeTracker.sol";
+import {
+    ContinuousFlatRateManagementFeeTracker
+} from "src/components/fees/management-fee-trackers/ContinuousFlatRateManagementFeeTracker.sol";
+import {
+    ContinuousFlatRatePerformanceFeeTracker
+} from "src/components/fees/performance-fee-trackers/ContinuousFlatRatePerformanceFeeTracker.sol";
 import {ValuationHandler} from "src/components/value/ValuationHandler.sol";
 import {LinearCreditDebtTracker} from "src/components/value/position-trackers/LinearCreditDebtTracker.sol";
 import {ERC7540LikeDepositQueue} from "src/components/issuance/deposit-handlers/ERC7540LikeDepositQueue.sol";
@@ -23,6 +25,7 @@ import {LimitedAccessLimitedCallForwarder} from "src/components/roles/LimitedAcc
 ///         and writes their addresses to `deployments/${chainid}.json` for front-end consumption.
 contract DeployProtocol is Script {
     struct Addrs {
+        ERC1967Proxy globalProxy;
         Global global;
         BeaconFactory sharesBeaconFactory;
         ComponentBeaconFactory feeHandlerBeaconFactory;
@@ -57,15 +60,11 @@ contract DeployProtocol is Script {
          * -------------------------------------------------------------------*/
 
         // Deploy as proxy
-        address lib = address(new Global());
-        addrs.global = Global(
-            address(
-                new ERC1967Proxy({
-                    implementation: lib,
-                    _data: abi.encodeWithSelector(Global.init.selector, vm.addr(deployerPK))
-                })
-            )
-        );
+        addrs.global = new Global();
+        addrs.globalProxy = new ERC1967Proxy({
+            implementation: address(addrs.global),
+            _data: abi.encodeWithSelector(Global.init.selector, vm.addr(deployerPK))
+        });
 
         /* ---------------------------------------------------------------------
          * Factories (upgrade beacons)
@@ -102,20 +101,17 @@ contract DeployProtocol is Script {
         // Set implementations for each specialized beacon factory
         addrs.sharesBeaconFactory.setImplementation(address(addrs.shares));
         addrs.feeHandlerBeaconFactory.setImplementation(address(addrs.feeHandler));
-        addrs.continuousFlatRateManagementFeeTrackerBeaconFactory.setImplementation(
-            address(addrs.continuousFlatRateManagementFeeTracker)
-        );
-        addrs.continuousFlatRatePerformanceFeeTrackerBeaconFactory.setImplementation(
-            address(addrs.continuousFlatRatePerformanceFeeTracker)
-        );
+        addrs.continuousFlatRateManagementFeeTrackerBeaconFactory
+            .setImplementation(address(addrs.continuousFlatRateManagementFeeTracker));
+        addrs.continuousFlatRatePerformanceFeeTrackerBeaconFactory
+            .setImplementation(address(addrs.continuousFlatRatePerformanceFeeTracker));
         addrs.accountERC20TrackerFactory.setImplementation(address(addrs.accountERC20Tracker));
         addrs.linearCreditDebtTrackerBeaconFactory.setImplementation(address(addrs.linearCreditDebtTracker));
         addrs.valuationHandlerBeaconFactory.setImplementation(address(addrs.valuationHandler));
         addrs.erc7540LikeDepositQueueBeaconFactory.setImplementation(address(addrs.erc7540LikeDepositQueue));
         addrs.erc7540LikeRedeemQueueBeaconFactory.setImplementation(address(addrs.erc7540LikeRedeemQueue));
-        addrs.limitedAccessLimitedCallForwarderFactory.setImplementation(
-            address(addrs.limitedAccessLimitedCallForwarder)
-        );
+        addrs.limitedAccessLimitedCallForwarderFactory
+            .setImplementation(address(addrs.limitedAccessLimitedCallForwarder));
 
         vm.stopBroadcast();
 
@@ -125,6 +121,9 @@ contract DeployProtocol is Script {
         string memory path = string.concat("./deploy/", vm.toString(block.chainid), ".json");
         string memory json = string.concat(
             "{\n",
+            '  "GlobalProxy": "',
+            vm.toString(address(addrs.globalProxy)),
+            '",\n',
             '  "Global": "',
             vm.toString(address(addrs.global)),
             '",\n',
