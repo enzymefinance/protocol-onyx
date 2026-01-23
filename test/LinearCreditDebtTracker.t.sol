@@ -38,6 +38,29 @@ contract LinearCreditDebtTrackerTest is Test, TestHelpers {
     }
 
     //==================================================================================================================
+    // Helpers
+    //==================================================================================================================
+
+    /// @dev Helper to create an item, optionally set settled value, and warp to a timestamp
+    function __createItemAndWarp(
+        int128 _totalValue,
+        uint40 _start,
+        uint32 _duration,
+        int128 _settledValue,
+        uint256 _warpTo
+    ) internal returns (uint24 itemId_) {
+        vm.startPrank(admin);
+        itemId_ =
+            tracker.addItem({_totalValue: _totalValue, _start: _start, _duration: _duration, _description: "test"});
+        if (_settledValue != 0) {
+            tracker.updateSettledValue({_id: itemId_, _totalSettled: _settledValue});
+        }
+        vm.stopPrank();
+
+        vm.warp(_warpTo);
+    }
+
+    //==================================================================================================================
     // Item management (access: Shares admin or owner)
     //==================================================================================================================
 
@@ -81,17 +104,17 @@ contract LinearCreditDebtTrackerTest is Test, TestHelpers {
         vm.prank(admin);
         tracker.addItem({_totalValue: _totalValue, _start: _start, _duration: _duration, _description: description});
 
-        assertEq(tracker.getLastItemId(), expectedId);
-        assertEq(tracker.getItemsCount(), prevItemsCount + 1);
-        assertEq(tracker.getItemIds()[expectedIndex], expectedId);
+        assertEq(tracker.getLastItemId(), expectedId, "incorrect last item id");
+        assertEq(tracker.getItemsCount(), prevItemsCount + 1, "incorrect items count");
+        assertEq(tracker.getItemIds()[expectedIndex], expectedId, "incorrect item id at index");
 
         LinearCreditDebtTracker.Item memory item = tracker.getItem({_id: expectedId});
-        assertEq(item.id, expectedId);
-        assertEq(item.index, expectedIndex);
-        assertEq(item.totalValue, _totalValue);
-        assertEq(item.start, _start);
-        assertEq(item.duration, _duration);
-        assertEq(item.settledValue, 0);
+        assertEq(item.id, expectedId, "incorrect item id");
+        assertEq(item.index, expectedIndex, "incorrect item index");
+        assertEq(item.totalValue, _totalValue, "incorrect item totalValue");
+        assertEq(item.start, _start, "incorrect item start");
+        assertEq(item.duration, _duration, "incorrect item duration");
+        assertEq(item.settledValue, 0, "incorrect item settledValue");
     }
 
     function test_removeItem_fail_notAdminOrOwner() public {
@@ -106,7 +129,7 @@ contract LinearCreditDebtTrackerTest is Test, TestHelpers {
         vm.prank(admin);
         uint24 id = tracker.addItem({_totalValue: 100, _start: 123, _duration: 456, _description: "test"});
 
-        assertEq(tracker.getItemsCount(), 1);
+        assertEq(tracker.getItemsCount(), 1, "incorrect items count before removal");
 
         vm.expectEmit();
         emit LinearCreditDebtTracker.ItemRemoved({id: id});
@@ -114,9 +137,9 @@ contract LinearCreditDebtTrackerTest is Test, TestHelpers {
         vm.prank(admin);
         tracker.removeItem({_id: id});
 
-        assertEq(tracker.getItemsCount(), 0);
+        assertEq(tracker.getItemsCount(), 0, "incorrect items count after removal");
         // Item is removed, so id is now 0
-        assertEq(tracker.getItem({_id: id}).id, 0);
+        assertEq(tracker.getItem({_id: id}).id, 0, "removed item id should be 0");
     }
 
     function test_removeItem_success_firstItem() public {
@@ -133,13 +156,13 @@ contract LinearCreditDebtTrackerTest is Test, TestHelpers {
         vm.prank(admin);
         tracker.removeItem({_id: firstId});
 
-        assertEq(tracker.getItem({_id: firstId}).id, 0);
+        assertEq(tracker.getItem({_id: firstId}).id, 0, "removed item id should be 0");
 
         // Array order now has final item as first item
         uint24[] memory itemIds = tracker.getItemIds();
-        assertEq(itemIds.length, 2);
-        assertEq(itemIds[0], lastId);
-        assertEq(itemIds[1], middleId);
+        assertEq(itemIds.length, 2, "incorrect items count");
+        assertEq(itemIds[0], lastId, "incorrect id at index 0");
+        assertEq(itemIds[1], middleId, "incorrect id at index 1");
     }
 
     function test_removeItem_success_middleItem() public {
@@ -156,13 +179,13 @@ contract LinearCreditDebtTrackerTest is Test, TestHelpers {
         vm.prank(admin);
         tracker.removeItem({_id: middleId});
 
-        assertEq(tracker.getItem({_id: middleId}).id, 0);
+        assertEq(tracker.getItem({_id: middleId}).id, 0, "removed item id should be 0");
 
         // Array order is preserved, without middle item
         uint24[] memory itemIds = tracker.getItemIds();
-        assertEq(itemIds.length, 2);
-        assertEq(itemIds[0], firstId);
-        assertEq(itemIds[1], lastId);
+        assertEq(itemIds.length, 2, "incorrect items count");
+        assertEq(itemIds[0], firstId, "incorrect id at index 0");
+        assertEq(itemIds[1], lastId, "incorrect id at index 1");
     }
 
     function test_removeItem_success_lastItem() public {
@@ -179,13 +202,13 @@ contract LinearCreditDebtTrackerTest is Test, TestHelpers {
         vm.prank(admin);
         tracker.removeItem({_id: lastId});
 
-        assertEq(tracker.getItem({_id: lastId}).id, 0);
+        assertEq(tracker.getItem({_id: lastId}).id, 0, "removed item id should be 0");
 
         // Array order is preserved, without last item
         uint24[] memory itemIds = tracker.getItemIds();
-        assertEq(itemIds.length, 2);
-        assertEq(itemIds[0], firstId);
-        assertEq(itemIds[1], middleId);
+        assertEq(itemIds.length, 2, "incorrect items count");
+        assertEq(itemIds[0], firstId, "incorrect id at index 0");
+        assertEq(itemIds[1], middleId, "incorrect id at index 1");
     }
 
     function test_updateSettledValue_fail_notAdminOrOwner() public {
@@ -217,17 +240,125 @@ contract LinearCreditDebtTrackerTest is Test, TestHelpers {
 
         // Check that the item was updated
         LinearCreditDebtTracker.Item memory item = tracker.getItem({_id: middleId});
-        assertEq(item.settledValue, totalSettled);
+        assertEq(item.settledValue, totalSettled, "incorrect settledValue");
         // initial values are unchanged
-        assertEq(item.totalValue, totalValue);
-        assertEq(item.start, start);
-        assertEq(item.duration, duration);
-        assertEq(item.id, middleId);
+        assertEq(item.totalValue, totalValue, "totalValue should be unchanged");
+        assertEq(item.start, start, "start should be unchanged");
+        assertEq(item.duration, duration, "duration should be unchanged");
+        assertEq(item.id, middleId, "id should be unchanged");
     }
 
     //==================================================================================================================
     // Position value
     //==================================================================================================================
+
+    /// @dev Non-existent item returns 0
+    function test_calcItemValue_success_nonExistentItem() public view {
+        assertEq(tracker.calcItemValue({_id: 999}), 0, "non-existent item should return 0");
+    }
+
+    /// @dev Before start: returns settledValue only
+    function test_calcItemValue_success_beforeStart() public {
+        int128 settledValue = 200;
+        uint24 itemId = __createItemAndWarp({
+            _totalValue: 1000, _start: 300, _duration: 100, _settledValue: settledValue, _warpTo: 299
+        });
+
+        assertEq(tracker.calcItemValue({_id: itemId}), settledValue, "incorrect value");
+    }
+
+    /// @dev At exact start: returns settledValue only
+    function test_calcItemValue_success_atExactStart_withDuration() public {
+        int128 settledValue = 200;
+        uint24 itemId = __createItemAndWarp({
+            _totalValue: 1000, _start: 300, _duration: 100, _settledValue: settledValue, _warpTo: 300
+        });
+
+        assertEq(tracker.calcItemValue({_id: itemId}), settledValue, "incorrect value");
+    }
+
+    /// @dev During linear period: returns settledValue + pro-rated totalValue
+    function test_calcItemValue_success_duringLinear() public {
+        int128 settledValue = 200;
+        uint24 itemId = __createItemAndWarp({
+            _totalValue: 1000,
+            _start: 300,
+            _duration: 100,
+            _settledValue: settledValue,
+            _warpTo: 320 // 20% through
+        });
+
+        int128 proRatedValue = 200; // 1000 * 20%
+        assertEq(tracker.calcItemValue({_id: itemId}), settledValue + proRatedValue, "incorrect value");
+    }
+
+    /// @dev During linear period with negative totalValue (debt)
+    function test_calcItemValue_success_duringLinear_negativeTotal() public {
+        int128 settledValue = 500;
+        uint24 itemId = __createItemAndWarp({
+            _totalValue: -1000,
+            _start: 300,
+            _duration: 100,
+            _settledValue: settledValue,
+            _warpTo: 320 // 20% through
+        });
+
+        int128 proRatedValue = -200; // -1000 * 20%
+        assertEq(tracker.calcItemValue({_id: itemId}), settledValue + proRatedValue, "incorrect value");
+    }
+
+    /// @dev At exact end: returns settledValue + totalValue
+    function test_calcItemValue_success_atExactEnd() public {
+        int128 settledValue = 200;
+        int128 totalValue = 1000;
+        uint24 itemId = __createItemAndWarp({
+            _totalValue: totalValue, _start: 300, _duration: 100, _settledValue: settledValue, _warpTo: 400
+        });
+
+        assertEq(tracker.calcItemValue({_id: itemId}), settledValue + totalValue, "incorrect value");
+    }
+
+    /// @dev After end: returns settledValue + totalValue
+    function test_calcItemValue_success_afterEnd() public {
+        int128 settledValue = 200;
+        int128 totalValue = 1000;
+        uint24 itemId = __createItemAndWarp({
+            _totalValue: totalValue, _start: 300, _duration: 100, _settledValue: settledValue, _warpTo: 2000
+        });
+
+        assertEq(tracker.calcItemValue({_id: itemId}), settledValue + totalValue, "incorrect value");
+    }
+
+    /// @dev With duration 0, before start: returns settledValue only
+    function test_calcItemValue_success_zeroDuration_beforeStart() public {
+        int128 settledValue = 200;
+        uint24 itemId = __createItemAndWarp({
+            _totalValue: 1000, _start: 300, _duration: 0, _settledValue: settledValue, _warpTo: 299
+        });
+
+        assertEq(tracker.calcItemValue({_id: itemId}), settledValue, "incorrect value");
+    }
+
+    /// @dev With duration 0, at exact start: returns settledValue only
+    function test_calcItemValue_success_zeroDuration_atExactStart() public {
+        int128 settledValue = 500;
+        uint24 itemId = __createItemAndWarp({
+            _totalValue: 1000, _start: 300, _duration: 0, _settledValue: settledValue, _warpTo: 300
+        });
+
+        assertEq(tracker.calcItemValue({_id: itemId}), settledValue, "incorrect value");
+    }
+
+    /// @dev With duration 0, after start: returns settledValue + totalValue
+    function test_calcItemValue_success_zeroDuration_afterEnd() public {
+        int128 settledValue = 200;
+        int128 totalValue = 1000;
+        uint24 itemId = __createItemAndWarp({
+            _totalValue: totalValue, _start: 300, _duration: 0, _settledValue: settledValue, _warpTo: 301
+        });
+
+        assertEq(tracker.calcItemValue({_id: itemId}), settledValue + totalValue, "incorrect value");
+    }
 
     function test_getPositionValue_success() public {
         uint256 currentTime = 123456;
@@ -273,6 +404,6 @@ contract LinearCreditDebtTrackerTest is Test, TestHelpers {
         tracker.updateSettledValue({_id: pastItemId, _totalSettled: pastItemTotalSettled});
         vm.stopPrank();
 
-        assertEq(tracker.getPositionValue(), expectedValue);
+        assertEq(tracker.getPositionValue(), expectedValue, "incorrect total position value");
     }
 }

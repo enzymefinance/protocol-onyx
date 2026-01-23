@@ -165,10 +165,27 @@ contract LinearCreditDebtTracker is IPositionTracker, ComponentHelpersMixin {
     /// @notice Calculates the value of a line-item at the current timestamp
     /// @param _id The line-item id
     /// @return value_ The value of the line-item (quoted in the Shares value asset)
-    /// @dev Cases:
-    /// - prior to item.start = settled value only
-    /// - while within "item.start + item.duration" = settled value + linearly pro-rated total value
-    /// - otherwise = settled value + total value
+    /// @dev EXPECTED LINE-ITEM VALUES BY CONDITION:
+    ///
+    /// With duration > 0 (linear write-down):
+    /// ┌───────────────────────┬───────────────────────────────────────────────────┐
+    /// │ Condition             │ Value                                             │
+    /// ├───────────────────────┼───────────────────────────────────────────────────┤
+    /// │ Before start          │ settledValue                                      │
+    /// │ At exact start        │ settledValue                                      │
+    /// │ During linear period  │ settledValue + pro-rated totalValue               │
+    /// │ At exact end          │ settledValue + totalValue                         │
+    /// │ After end             │ settledValue + totalValue                         │
+    /// └───────────────────────┴───────────────────────────────────────────────────┘
+    ///
+    /// With duration = 0 (discrete value change at start):
+    /// ┌───────────────────────┬───────────────────────────────────────────────────┐
+    /// │ Condition             │ Value                                             │
+    /// ├───────────────────────┼───────────────────────────────────────────────────┤
+    /// │ Before start          │ settledValue                                      │
+    /// │ At exact start        │ settledValue                                      │
+    /// │ After start           │ settledValue + totalValue                         │
+    /// └───────────────────────┴───────────────────────────────────────────────────┘
     function calcItemValue(uint24 _id) public view returns (int256 value_) {
         Item memory item = getItem({_id: _id});
 
