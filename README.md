@@ -34,6 +34,10 @@ forge build
 forge test
 ```
 
+### Utility Scripts
+
+Utility scripts can be found in the `scripts/` folder.
+
 ## Licensing
 
 - Source-available under Business Source License 1.1 (BUSL-1.1).
