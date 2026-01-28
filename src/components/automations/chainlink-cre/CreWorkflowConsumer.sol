@@ -21,6 +21,10 @@ import {IReceiver} from "./IReceiver.sol";
 /// @title CreWorkflowConsumer Contract
 /// @author Enzyme Foundation <security@enzyme.finance>
 /// @notice A contract that receives and processes Chainlink Runtime Environment (CRE) reports
+/// @dev The workflowId and workflowName checks
+/// serve as defense-in-depth against accidents (e.g., the owner misconfiguring a workflow registration)
+/// or off-chain compromises (e.g., if the workflow owner's off-chain registration credentials were
+/// compromised, the on-chain checks would still block unauthorized workflows from executing).
 contract CreWorkflowConsumer is IReceiver, ComponentHelpersMixin {
     //==================================================================================================================
     // Immutables
