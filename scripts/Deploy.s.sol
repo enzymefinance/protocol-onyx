@@ -69,17 +69,19 @@ contract DeployProtocol is Script {
         /* ---------------------------------------------------------------------
          * Factories (upgrade beacons)
          * -------------------------------------------------------------------*/
-        addrs.sharesBeaconFactory = new BeaconFactory(address(addrs.global));
+        addrs.sharesBeaconFactory = new BeaconFactory(address(addrs.globalProxy));
         // Create specialized beacon factories for each component type
-        addrs.feeHandlerBeaconFactory = new ComponentBeaconFactory(address(addrs.global));
-        addrs.continuousFlatRateManagementFeeTrackerBeaconFactory = new ComponentBeaconFactory(address(addrs.global));
-        addrs.continuousFlatRatePerformanceFeeTrackerBeaconFactory = new ComponentBeaconFactory(address(addrs.global));
-        addrs.accountERC20TrackerFactory = new ComponentBeaconFactory(address(addrs.global));
-        addrs.linearCreditDebtTrackerBeaconFactory = new ComponentBeaconFactory(address(addrs.global));
-        addrs.valuationHandlerBeaconFactory = new ComponentBeaconFactory(address(addrs.global));
-        addrs.erc7540LikeDepositQueueBeaconFactory = new ComponentBeaconFactory(address(addrs.global));
-        addrs.erc7540LikeRedeemQueueBeaconFactory = new ComponentBeaconFactory(address(addrs.global));
-        addrs.limitedAccessLimitedCallForwarderFactory = new ComponentBeaconFactory(address(addrs.global));
+        addrs.feeHandlerBeaconFactory = new ComponentBeaconFactory(address(addrs.globalProxy));
+        addrs.continuousFlatRateManagementFeeTrackerBeaconFactory =
+            new ComponentBeaconFactory(address(addrs.globalProxy));
+        addrs.continuousFlatRatePerformanceFeeTrackerBeaconFactory =
+            new ComponentBeaconFactory(address(addrs.globalProxy));
+        addrs.accountERC20TrackerFactory = new ComponentBeaconFactory(address(addrs.globalProxy));
+        addrs.linearCreditDebtTrackerBeaconFactory = new ComponentBeaconFactory(address(addrs.globalProxy));
+        addrs.valuationHandlerBeaconFactory = new ComponentBeaconFactory(address(addrs.globalProxy));
+        addrs.erc7540LikeDepositQueueBeaconFactory = new ComponentBeaconFactory(address(addrs.globalProxy));
+        addrs.erc7540LikeRedeemQueueBeaconFactory = new ComponentBeaconFactory(address(addrs.globalProxy));
+        addrs.limitedAccessLimitedCallForwarderFactory = new ComponentBeaconFactory(address(addrs.globalProxy));
 
         /* ---------------------------------------------------------------------
          * Implementation contracts
