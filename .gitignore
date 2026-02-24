@@ -20,3 +20,6 @@ out/
 /broadcast/**/dry-run/
 
 /deploy
+
+# Contract deployment arguments
+args.txt
