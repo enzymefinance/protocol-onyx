@@ -34,6 +34,16 @@ contract ERC7540LikeDepositQueueTest is TestHelpers {
 
     ERC7540LikeDepositQueueHarness depositQueue;
 
+    struct ExecuteDepositSetupData {
+        address asset;
+        address request1Controller;
+        address request3Controller;
+        uint256 request1AssetAmount;
+        uint256 request3AssetAmount;
+        uint256 request1ExpectedSharesAmount;
+        uint256 request3ExpectedSharesAmount;
+    }
+
     function setUp() public {
         shares = createShares();
         owner = shares.owner();
@@ -483,14 +493,14 @@ contract ERC7540LikeDepositQueueTest is TestHelpers {
     }
 
     // Queues 3 requests, and executes 2 of them
-    function test_executeDepositRequests_success() public {
+    function __test_executeDepositRequests_setup() private returns (ExecuteDepositSetupData memory data_) {
         // Define requests
-        address request1Controller = makeAddr("controller1");
+        data_.request1Controller = makeAddr("controller1");
         address request2Controller = makeAddr("controller2");
-        address request3Controller = makeAddr("controller3");
+        data_.request3Controller = makeAddr("controller3");
 
-        uint256 request1AssetAmount = 5_000_000; // 5 units with 6 decimals
-        uint256 request3AssetAmount = 10_000_000; // 10 units with 6 decimals
+        data_.request1AssetAmount = 5_000_000; // 5 units with 6 decimals
+        data_.request3AssetAmount = 10_000_000; // 10 units with 6 decimals
 
         uint128 depositAssetToValueAssetRate = 4e18; // 1 depositAsset : 4 valueAsset
         // sharePrice = 1e18; // Keep it simple with 1:1 share price
@@ -501,20 +511,20 @@ contract ERC7540LikeDepositQueueTest is TestHelpers {
         uint256 request1FeeSharesAmount = 1e18; // 10% fee of 10 shares
         uint256 request3FeeSharesAmount = 2e18; // 10% fee of 20 shares
 
-        uint256 request1ExpectedSharesAmount = request1GrossSharesAmount - request1FeeSharesAmount;
-        uint256 request3ExpectedSharesAmount = request3GrossSharesAmount - request3FeeSharesAmount;
+        data_.request1ExpectedSharesAmount = request1GrossSharesAmount - request1FeeSharesAmount;
+        data_.request3ExpectedSharesAmount = request3GrossSharesAmount - request3FeeSharesAmount;
 
         // Create and set the asset
         uint8 assetDecimals = 6;
-        address asset = address(new MockERC20(assetDecimals));
+        data_.asset = address(new MockERC20(assetDecimals));
         vm.prank(admin);
-        depositQueue.setAsset({_asset: asset});
+        depositQueue.setAsset({_asset: data_.asset});
 
         // Set the asset rate
         vm.prank(admin);
         valuationHandler.setAssetRate(
             ValuationHandler.AssetRateInput({
-                asset: asset, rate: depositAssetToValueAssetRate, expiry: uint40(block.timestamp + 1)
+                asset: data_.asset, rate: depositAssetToValueAssetRate, expiry: uint40(block.timestamp + 1)
             })
         );
 
@@ -535,24 +545,28 @@ contract ERC7540LikeDepositQueueTest is TestHelpers {
         shares.setFeeHandler(mockFeeHandler);
 
         // Seed controllers with asset, and grant allowance to the queue
-        address[3] memory controllers = [request1Controller, request2Controller, request3Controller];
+        address[3] memory controllers = [data_.request1Controller, request2Controller, data_.request3Controller];
         for (uint256 i; i < controllers.length; i++) {
-            deal(asset, controllers[i], 1000 * 10 ** IERC20(asset).decimals(), true);
+            deal(data_.asset, controllers[i], 1000 * 10 ** IERC20(data_.asset).decimals(), true);
             vm.prank(controllers[i]);
-            IERC20(asset).approve(address(depositQueue), type(uint256).max);
+            IERC20(data_.asset).approve(address(depositQueue), type(uint256).max);
         }
 
         // Create the requests
-        vm.prank(request1Controller);
+        vm.prank(data_.request1Controller);
         depositQueue.requestDeposit({
-            _assets: request1AssetAmount, _controller: request1Controller, _owner: request1Controller
+            _assets: data_.request1AssetAmount, _controller: data_.request1Controller, _owner: data_.request1Controller
         });
         vm.prank(request2Controller);
         depositQueue.requestDeposit({_assets: 456, _controller: request2Controller, _owner: request2Controller});
-        vm.prank(request3Controller);
+        vm.prank(data_.request3Controller);
         depositQueue.requestDeposit({
-            _assets: request3AssetAmount, _controller: request3Controller, _owner: request3Controller
+            _assets: data_.request3AssetAmount, _controller: data_.request3Controller, _owner: data_.request3Controller
         });
+    }
+
+    function test_executeDepositRequests_success() public {
+        ExecuteDepositSetupData memory d = __test_executeDepositRequests_setup();
 
         // Define ids to execute: first and last items
         uint256[] memory requestIdsToExecute = new uint256[](2);
@@ -562,26 +576,26 @@ contract ERC7540LikeDepositQueueTest is TestHelpers {
         // Pre-assert events
         vm.expectEmit(address(depositQueue));
         emit IERC7540LikeDepositHandler.Deposit({
-            sender: request1Controller,
-            owner: request1Controller,
-            assets: request1AssetAmount,
-            shares: request1ExpectedSharesAmount
+            sender: d.request1Controller,
+            owner: d.request1Controller,
+            assets: d.request1AssetAmount,
+            shares: d.request1ExpectedSharesAmount
         });
         vm.expectEmit(address(depositQueue));
         emit IERC7540LikeDepositHandler.DepositRequestExecuted({
-            requestId: 1, sharesAmount: request1ExpectedSharesAmount
+            requestId: 1, sharesAmount: d.request1ExpectedSharesAmount
         });
 
         vm.expectEmit(address(depositQueue));
         emit IERC7540LikeDepositHandler.Deposit({
-            sender: request3Controller,
-            owner: request3Controller,
-            assets: request3AssetAmount,
-            shares: request3ExpectedSharesAmount
+            sender: d.request3Controller,
+            owner: d.request3Controller,
+            assets: d.request3AssetAmount,
+            shares: d.request3ExpectedSharesAmount
         });
         vm.expectEmit(address(depositQueue));
         emit IERC7540LikeDepositHandler.DepositRequestExecuted({
-            requestId: 3, sharesAmount: request3ExpectedSharesAmount
+            requestId: 3, sharesAmount: d.request3ExpectedSharesAmount
         });
 
         // Execute the requests
@@ -590,20 +604,20 @@ contract ERC7540LikeDepositQueueTest is TestHelpers {
 
         // Assert shares sent
         assertEq(
-            shares.balanceOf(request1Controller),
-            request1ExpectedSharesAmount,
+            shares.balanceOf(d.request1Controller),
+            d.request1ExpectedSharesAmount,
             "incorrect final shares balance for request 1"
         );
         assertEq(
-            shares.balanceOf(request3Controller),
-            request3ExpectedSharesAmount,
+            shares.balanceOf(d.request3Controller),
+            d.request3ExpectedSharesAmount,
             "incorrect final shares balance for request 3"
         );
 
         // Assert assets sent to Shares
         assertEq(
-            IERC20(asset).balanceOf(address(shares)),
-            request1AssetAmount + request3AssetAmount,
+            IERC20(d.asset).balanceOf(address(shares)),
+            d.request1AssetAmount + d.request3AssetAmount,
             "incorrect final asset balance in Shares"
         );
 

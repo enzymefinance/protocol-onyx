@@ -33,6 +33,16 @@ contract ERC7540LikeRedeemQueueTest is TestHelpers {
 
     ERC7540LikeRedeemQueueHarness redeemQueue;
 
+    struct ExecuteRedeemSetupData {
+        address asset;
+        address request1Controller;
+        address request3Controller;
+        uint256 request1SharesAmount;
+        uint256 request3SharesAmount;
+        uint256 request1ExpectedAssetAmount;
+        uint256 request3ExpectedAssetAmount;
+    }
+
     function setUp() public {
         shares = createShares();
         owner = shares.owner();
@@ -253,14 +263,14 @@ contract ERC7540LikeRedeemQueueTest is TestHelpers {
     }
 
     // Queues 3 requests, and executes 2 of them
-    function test_executeRedeemRequests_success() public {
+    function __test_executeRedeemRequests_setup() private returns (ExecuteRedeemSetupData memory data_) {
         // Define requests
-        address request1Controller = makeAddr("controller1");
+        data_.request1Controller = makeAddr("controller1");
         address request2Controller = makeAddr("controller2");
-        address request3Controller = makeAddr("controller3");
+        data_.request3Controller = makeAddr("controller3");
 
-        uint256 request1SharesAmount = 20e18; // 20 shares
-        uint256 request3SharesAmount = 40e18; // 40 shares
+        data_.request1SharesAmount = 20e18; // 20 shares
+        data_.request3SharesAmount = 40e18; // 40 shares
 
         uint256 request1FeeSharesAmount = 2e18; // 10% fee
         uint256 request3FeeSharesAmount = 4e18; // 10% fee
@@ -268,20 +278,20 @@ contract ERC7540LikeRedeemQueueTest is TestHelpers {
         uint128 redeemAssetToValueAssetRate = 4e18; // 4:1 conversion rate (4 value units per 1 asset unit)
         // sharePrice = 1e18; // Keep it simple with 1:1 share price
 
-        uint256 request1ExpectedAssetAmount = 4.5e6; // (20 shares - 10% fee)/4 = 4.5 asset units
-        uint256 request3ExpectedAssetAmount = 9e6; // (40 shares - 10% fee)/4 = 9 asset units
+        data_.request1ExpectedAssetAmount = 4.5e6; // (20 shares - 10% fee)/4 = 4.5 asset units
+        data_.request3ExpectedAssetAmount = 9e6; // (40 shares - 10% fee)/4 = 9 asset units
 
         // Create and set the asset
         uint8 assetDecimals = 6;
-        address asset = address(new MockERC20(assetDecimals));
+        data_.asset = address(new MockERC20(assetDecimals));
         vm.prank(admin);
-        redeemQueue.setAsset({_asset: asset});
+        redeemQueue.setAsset({_asset: data_.asset});
 
         // Set the asset rate
         vm.prank(admin);
         valuationHandler.setAssetRate(
             ValuationHandler.AssetRateInput({
-                asset: asset, rate: redeemAssetToValueAssetRate, expiry: uint40(block.timestamp + 1)
+                asset: data_.asset, rate: redeemAssetToValueAssetRate, expiry: uint40(block.timestamp + 1)
             })
         );
 
@@ -290,22 +300,22 @@ contract ERC7540LikeRedeemQueueTest is TestHelpers {
         feeHandler_mockSettleExitFeeGivenGrossShares({
             _feeHandler: mockFeeHandler,
             _feeSharesAmount: request1FeeSharesAmount,
-            _grossSharesAmount: request1SharesAmount
+            _grossSharesAmount: data_.request1SharesAmount
         });
         feeHandler_mockSettleExitFeeGivenGrossShares({
             _feeHandler: mockFeeHandler,
             _feeSharesAmount: request3FeeSharesAmount,
-            _grossSharesAmount: request3SharesAmount
+            _grossSharesAmount: data_.request3SharesAmount
         });
 
         vm.prank(admin);
         shares.setFeeHandler(mockFeeHandler);
 
         // Seed Shares with the asset
-        deal(asset, address(shares), 1000 * 10 ** IERC20(asset).decimals(), true);
+        deal(data_.asset, address(shares), 1000 * 10 ** IERC20(data_.asset).decimals(), true);
 
         // Seed controllers with shares, and grant allowance to the queue
-        address[3] memory controllers = [request1Controller, request2Controller, request3Controller];
+        address[3] memory controllers = [data_.request1Controller, request2Controller, data_.request3Controller];
         for (uint256 i; i < controllers.length; i++) {
             deal(address(shares), controllers[i], 1000 * 10 ** shares.decimals(), true);
             vm.prank(controllers[i]);
@@ -313,16 +323,20 @@ contract ERC7540LikeRedeemQueueTest is TestHelpers {
         }
 
         // Create the requests
-        vm.prank(request1Controller);
+        vm.prank(data_.request1Controller);
         redeemQueue.requestRedeem({
-            _shares: request1SharesAmount, _controller: request1Controller, _owner: request1Controller
+            _shares: data_.request1SharesAmount, _controller: data_.request1Controller, _owner: data_.request1Controller
         });
         vm.prank(request2Controller);
         redeemQueue.requestRedeem({_shares: 456, _controller: request2Controller, _owner: request2Controller});
-        vm.prank(request3Controller);
+        vm.prank(data_.request3Controller);
         redeemQueue.requestRedeem({
-            _shares: request3SharesAmount, _controller: request3Controller, _owner: request3Controller
+            _shares: data_.request3SharesAmount, _controller: data_.request3Controller, _owner: data_.request3Controller
         });
+    }
+
+    function test_executeRedeemRequests_success() public {
+        ExecuteRedeemSetupData memory d = __test_executeRedeemRequests_setup();
 
         // Define ids to execute: first and last items
         uint256[] memory requestIdsToExecute = new uint256[](2);
@@ -335,35 +349,35 @@ contract ERC7540LikeRedeemQueueTest is TestHelpers {
         vm.expectEmit();
         emit IERC7540LikeRedeemHandler.Withdraw({
             sender: admin,
-            receiver: request1Controller,
-            owner: request1Controller,
-            assets: request1ExpectedAssetAmount,
-            shares: request1SharesAmount
+            receiver: d.request1Controller,
+            owner: d.request1Controller,
+            assets: d.request1ExpectedAssetAmount,
+            shares: d.request1SharesAmount
         });
         vm.expectEmit();
-        emit IERC7540LikeRedeemHandler.RedeemRequestExecuted({requestId: 1, assetAmount: request1ExpectedAssetAmount});
+        emit IERC7540LikeRedeemHandler.RedeemRequestExecuted({requestId: 1, assetAmount: d.request1ExpectedAssetAmount});
 
         vm.expectEmit();
         emit IERC7540LikeRedeemHandler.Withdraw({
             sender: admin,
-            receiver: request3Controller,
-            owner: request3Controller,
-            assets: request3ExpectedAssetAmount,
-            shares: request3SharesAmount
+            receiver: d.request3Controller,
+            owner: d.request3Controller,
+            assets: d.request3ExpectedAssetAmount,
+            shares: d.request3SharesAmount
         });
         vm.expectEmit();
-        emit IERC7540LikeRedeemHandler.RedeemRequestExecuted({requestId: 3, assetAmount: request3ExpectedAssetAmount});
+        emit IERC7540LikeRedeemHandler.RedeemRequestExecuted({requestId: 3, assetAmount: d.request3ExpectedAssetAmount});
 
         // Execute the requests
         vm.prank(admin);
         redeemQueue.executeRedeemRequests({_requestIds: requestIdsToExecute});
 
         // Assert assets sent
-        assertEq(IERC20(asset).balanceOf(request1Controller), request1ExpectedAssetAmount);
-        assertEq(IERC20(asset).balanceOf(request3Controller), request3ExpectedAssetAmount);
+        assertEq(IERC20(d.asset).balanceOf(d.request1Controller), d.request1ExpectedAssetAmount);
+        assertEq(IERC20(d.asset).balanceOf(d.request3Controller), d.request3ExpectedAssetAmount);
 
         // Assert shares are burned
-        assertEq(shares.totalSupply(), preExecuteTotalSupply - (request1SharesAmount + request3SharesAmount));
+        assertEq(shares.totalSupply(), preExecuteTotalSupply - (d.request1SharesAmount + d.request3SharesAmount));
 
         // Assert requests are removed
         assertEq(redeemQueue.getRedeemRequest(1).controller, address(0));

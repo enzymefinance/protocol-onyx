@@ -360,48 +360,38 @@ contract LinearCreditDebtTrackerTest is Test, TestHelpers {
         assertEq(tracker.calcItemValue({_id: itemId}), settledValue + totalValue, "incorrect value");
     }
 
+    function __test_getPositionValue_addItems(uint256 _currentTime) private {
+        // 1. start in the future
+        uint24 futureItemId = tracker.addItem({
+            _totalValue: 100, _start: uint40(_currentTime + 1), _duration: uint32(1000), _description: "test"
+        });
+        tracker.updateSettledValue({_id: futureItemId, _totalSettled: -400});
+
+        // 2. equally between start and stop
+        uint24 midwayItemId = tracker.addItem({
+            _totalValue: 5_000, _start: uint40(_currentTime - 10), _duration: uint32(20), _description: "test"
+        });
+        tracker.updateSettledValue({_id: midwayItemId, _totalSettled: -1_000});
+
+        // 3. stop in the past (i.e., matured)
+        uint24 pastItemId = tracker.addItem({
+            _totalValue: -30_000, _start: uint40(_currentTime - 1000), _duration: 999, _description: "test"
+        });
+        tracker.updateSettledValue({_id: pastItemId, _totalSettled: 10_000});
+    }
+
     function test_getPositionValue_success() public {
         uint256 currentTime = 123456;
         vm.warp(currentTime);
 
-        // Add items with settlements:
-        // 1. start in the future
-        // 2. equally between start and stop
-        // 3. stop in the past (i.e., matured)
-
-        int128 futureItemTotalValue = 100;
-        int128 futureItemTotalSettled = -400;
-        int256 futureItemExpectedValue = -400; // settled value only
-
-        int128 midwayItemTotalValue = 5_000;
-        int128 midwayItemTotalSettled = -1_000;
-        int256 midwayItemExpectedValue = 1_500; // settled value (-1,000) + linear value at 50% (2,500)
-
-        int128 pastItemTotalValue = -30_000;
-        int128 pastItemTotalSettled = 10_000;
-        int256 pastItemExpectedValue = -20_000; // settled value + total value
-
-        int256 expectedValue = futureItemExpectedValue + midwayItemExpectedValue + pastItemExpectedValue;
+        // Expected values:
+        // future: -400 (settled value only)
+        // midway: 1,500 (settled value (-1,000) + linear value at 50% (2,500))
+        // past: -20,000 (settled value + total value)
+        int256 expectedValue = -400 + 1_500 + (-20_000);
 
         vm.startPrank(admin);
-        uint24 futureItemId = tracker.addItem({
-            _totalValue: futureItemTotalValue,
-            _start: uint40(currentTime + 1),
-            _duration: uint32(1000),
-            _description: "test"
-        });
-        uint24 midwayItemId = tracker.addItem({
-            _totalValue: midwayItemTotalValue,
-            _start: uint40(currentTime - 10),
-            _duration: uint32(20),
-            _description: "test"
-        });
-        uint24 pastItemId = tracker.addItem({
-            _totalValue: pastItemTotalValue, _start: uint40(currentTime - 1000), _duration: 999, _description: "test"
-        });
-        tracker.updateSettledValue({_id: futureItemId, _totalSettled: futureItemTotalSettled});
-        tracker.updateSettledValue({_id: midwayItemId, _totalSettled: midwayItemTotalSettled});
-        tracker.updateSettledValue({_id: pastItemId, _totalSettled: pastItemTotalSettled});
+        __test_getPositionValue_addItems(currentTime);
         vm.stopPrank();
 
         assertEq(tracker.getPositionValue(), expectedValue, "incorrect total position value");

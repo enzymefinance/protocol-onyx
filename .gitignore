@@ -23,3 +23,5 @@ out/
 
 # Contract deployment arguments
 args.txt
+
+!.claude

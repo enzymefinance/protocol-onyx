@@ -2,7 +2,9 @@
 src = "src"
 out = "out"
 libs = ["lib"]
-via_ir = true
+# ⚠️ Never set via-ir to true, the Solidity 0.8.28 has the bug, Transient Storage Clearing Helper Collision Bug https://www.soliditylang.org/blog/2026/02/18/transient-storage-clearing-helper-collision-bug/.
+# ⚠️ Historically there were multiple issue with via-ir compiler, so it is best to keep it disabled for future Solidity versions too. Reference for past bugs: https://www.soliditylang.org/blog/2022/09/08/storage-write-removal-before-conditional-termination https://www.soliditylang.org/blog/2023/07/19/full-inliner-non-expression-split-argument-evaluation-order-bug
+via_ir = false
 optimizer = true
 optimizer_runs = 200
 fs_permissions = [{ access = "write", path = "./deploy/"}]
