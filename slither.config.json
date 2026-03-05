@@ -1,0 +1,10 @@
+{
+  "detectors_to_exclude": [
+    "unindexed-event-address",
+    "too-many-digits",
+    "naming-convention",
+    "pragma",
+    "reentrancy-events"
+  ],
+  "exclude_dependencies": true
+}
