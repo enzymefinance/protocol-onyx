@@ -25,3 +25,8 @@ out/
 args.txt
 
 !.claude
+
+.claude/skills
+
+CLAUDE.MD
+CLAUDE.md
