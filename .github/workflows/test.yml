@@ -20,6 +20,8 @@ jobs:
       ETHEREUM_NODE_ARBITRUM: ${{ secrets.ETHEREUM_NODE_ARBITRUM }}
       ETHEREUM_NODE_BASE: ${{ secrets.ETHEREUM_NODE_BASE }}
       ETHEREUM_NODE_PLUME: ${{ secrets.ETHEREUM_NODE_PLUME }}
+      ETHEREUM_NODE_MEGA_ETH: ${{ secrets.ETHEREUM_NODE_MEGA_ETH }}
+      ETHEREUM_NODE_ETHEREUM_SEPOLIA: ${{ secrets.ETHEREUM_NODE_ETHEREUM_SEPOLIA }}
     steps:
       - uses: actions/checkout@v4
         with:

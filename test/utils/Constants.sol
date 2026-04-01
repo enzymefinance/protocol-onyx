@@ -17,4 +17,6 @@ abstract contract Constants {
     uint256 internal constant ARBITRUM_BLOCK_LATEST = 408447230; // Dec 8th, 2025
     uint256 internal constant BASE_BLOCK_LATEST = 39201030; // Dec 8th, 2025
     uint256 internal constant PLUME_BLOCK_LATEST = 41664170; // Dec 8th, 2025
+    uint256 internal constant MEGA_ETH_BLOCK_LATEST = 12236830; // Apr 1st, 2026
+    uint256 internal constant ETHEREUM_SEPOLIA_BLOCK_LATEST = 10566500; // Apr 1st, 2026
 }

@@ -14,6 +14,8 @@ mainnet = "${ETHEREUM_NODE_MAINNET}"
 arbitrum = "${ETHEREUM_NODE_ARBITRUM}"
 base = "${ETHEREUM_NODE_BASE}"
 plume = "${ETHEREUM_NODE_PLUME}"
+mega_eth = "${ETHEREUM_NODE_MEGA_ETH}"
+ethereum_sepolia = "${ETHEREUM_NODE_ETHEREUM_SEPOLIA}"
 
 [lint]
 # Several lints fail on acronyms like "ERC" instead of "Erc", so we exclude those

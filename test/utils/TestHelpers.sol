@@ -129,6 +129,14 @@ contract TestHelpers is Constants, Test {
         vm.createSelectFork(vm.envString("ETHEREUM_NODE_PLUME"), PLUME_BLOCK_LATEST);
     }
 
+    function createSelectMegaEthFork() internal {
+        vm.createSelectFork(vm.envString("ETHEREUM_NODE_MEGA_ETH"), MEGA_ETH_BLOCK_LATEST);
+    }
+
+    function createSelectEthereumSepoliaFork() internal {
+        vm.createSelectFork(vm.envString("ETHEREUM_NODE_ETHEREUM_SEPOLIA"), ETHEREUM_SEPOLIA_BLOCK_LATEST);
+    }
+
     // MISC
 
     function increaseSharesSupply(address _shares, uint256 _increaseAmount) internal {

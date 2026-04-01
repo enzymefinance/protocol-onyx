@@ -20,14 +20,21 @@ import {ERC7540LikeDepositQueue} from "src/components/issuance/deposit-handlers/
 import {ERC7540LikeRedeemQueue} from "src/components/issuance/redeem-handlers/ERC7540LikeRedeemQueue.sol";
 import {AccountERC20Tracker} from "src/components/value/position-trackers/AccountERC20Tracker.sol";
 import {LimitedAccessLimitedCallForwarder} from "src/components/roles/LimitedAccessLimitedCallForwarder.sol";
+import {CreWorkflowConsumer} from "src/components/automations/chainlink-cre/CreWorkflowConsumer.sol";
+import {SharesOwnedAddressList} from "src/components/lists/SharesOwnedAddressList.sol";
+import {OwnableAddressList} from "src/infra/lists/address-list/OwnableAddressList.sol";
+import {SyncDepositHandler} from "src/components/issuance/deposit-handlers/SyncDepositHandler.sol";
 
 /// @notice Deploys core Onyx protocol contracts to a target network
 ///         and writes their addresses to `deployments/${chainid}.json` for front-end consumption.
 contract DeployProtocol is Script {
+    address constant ENZYME_DEVELOPERS = address(0xd24bBcD06C54a5a2A6d22f4AaE25AB511190C7b5);
+
     struct Addrs {
         ERC1967Proxy globalProxy;
         Global global;
         BeaconFactory sharesBeaconFactory;
+        BeaconFactory ownableAddressListFactory;
         ComponentBeaconFactory feeHandlerBeaconFactory;
         ComponentBeaconFactory continuousFlatRateManagementFeeTrackerBeaconFactory;
         ComponentBeaconFactory continuousFlatRatePerformanceFeeTrackerBeaconFactory;
@@ -37,6 +44,9 @@ contract DeployProtocol is Script {
         ComponentBeaconFactory erc7540LikeDepositQueueBeaconFactory;
         ComponentBeaconFactory erc7540LikeRedeemQueueBeaconFactory;
         ComponentBeaconFactory limitedAccessLimitedCallForwarderFactory;
+        ComponentBeaconFactory creWorkflowConsumerFactory;
+        ComponentBeaconFactory sharesOwnedAddressListFactory;
+        ComponentBeaconFactory syncDepositHandlerFactory;
         Shares shares;
         FeeHandler feeHandler;
         ContinuousFlatRateManagementFeeTracker continuousFlatRateManagementFeeTracker;
@@ -47,13 +57,17 @@ contract DeployProtocol is Script {
         ERC7540LikeDepositQueue erc7540LikeDepositQueue;
         ERC7540LikeRedeemQueue erc7540LikeRedeemQueue;
         LimitedAccessLimitedCallForwarder limitedAccessLimitedCallForwarder;
+        CreWorkflowConsumer creWorkflowConsumer;
+        SharesOwnedAddressList sharesOwnedAddressList;
+        OwnableAddressList ownableAddressList;
+        SyncDepositHandler syncDepositHandler;
     }
 
-    Addrs public addrs;
+    Addrs internal addrs;
 
     function run() external {
-        uint256 deployerPK = vm.envUint("DEPLOYER_PK");
-        vm.startBroadcast(deployerPK);
+        vm.startBroadcast();
+        (, address deployer,) = vm.readCallers();
 
         /* ---------------------------------------------------------------------
          * Core governance / global contract
@@ -62,14 +76,14 @@ contract DeployProtocol is Script {
         // Deploy as proxy
         addrs.global = new Global();
         addrs.globalProxy = new ERC1967Proxy({
-            implementation: address(addrs.global),
-            _data: abi.encodeWithSelector(Global.init.selector, vm.addr(deployerPK))
+            implementation: address(addrs.global), _data: abi.encodeWithSelector(Global.init.selector, deployer)
         });
 
         /* ---------------------------------------------------------------------
          * Factories (upgrade beacons)
          * -------------------------------------------------------------------*/
         addrs.sharesBeaconFactory = new BeaconFactory(address(addrs.globalProxy));
+        addrs.ownableAddressListFactory = new BeaconFactory(address(addrs.globalProxy));
         // Create specialized beacon factories for each component type
         addrs.feeHandlerBeaconFactory = new ComponentBeaconFactory(address(addrs.globalProxy));
         addrs.continuousFlatRateManagementFeeTrackerBeaconFactory =
@@ -82,6 +96,13 @@ contract DeployProtocol is Script {
         addrs.erc7540LikeDepositQueueBeaconFactory = new ComponentBeaconFactory(address(addrs.globalProxy));
         addrs.erc7540LikeRedeemQueueBeaconFactory = new ComponentBeaconFactory(address(addrs.globalProxy));
         addrs.limitedAccessLimitedCallForwarderFactory = new ComponentBeaconFactory(address(addrs.globalProxy));
+        address chainlinkKeystoneForwarder = __getChainlinkKeystoneForwarder();
+        bool isChainlinkKeystoneForwarderAvailable = chainlinkKeystoneForwarder != address(0);
+        if (isChainlinkKeystoneForwarderAvailable) {
+            addrs.creWorkflowConsumerFactory = new ComponentBeaconFactory(address(addrs.globalProxy));
+        }
+        addrs.sharesOwnedAddressListFactory = new ComponentBeaconFactory(address(addrs.globalProxy));
+        addrs.syncDepositHandlerFactory = new ComponentBeaconFactory(address(addrs.globalProxy));
 
         /* ---------------------------------------------------------------------
          * Implementation contracts
@@ -96,6 +117,12 @@ contract DeployProtocol is Script {
         addrs.erc7540LikeDepositQueue = new ERC7540LikeDepositQueue();
         addrs.erc7540LikeRedeemQueue = new ERC7540LikeRedeemQueue();
         addrs.limitedAccessLimitedCallForwarder = new LimitedAccessLimitedCallForwarder();
+        if (isChainlinkKeystoneForwarderAvailable) {
+            addrs.creWorkflowConsumer = new CreWorkflowConsumer(chainlinkKeystoneForwarder, ENZYME_DEVELOPERS);
+        }
+        addrs.sharesOwnedAddressList = new SharesOwnedAddressList();
+        addrs.ownableAddressList = new OwnableAddressList();
+        addrs.syncDepositHandler = new SyncDepositHandler();
 
         /* ---------------------------------------------------------------------
          * Set implementations
@@ -114,85 +141,99 @@ contract DeployProtocol is Script {
         addrs.erc7540LikeRedeemQueueBeaconFactory.setImplementation(address(addrs.erc7540LikeRedeemQueue));
         addrs.limitedAccessLimitedCallForwarderFactory
             .setImplementation(address(addrs.limitedAccessLimitedCallForwarder));
+        if (isChainlinkKeystoneForwarderAvailable) {
+            addrs.creWorkflowConsumerFactory.setImplementation(address(addrs.creWorkflowConsumer));
+        }
+        addrs.sharesOwnedAddressListFactory.setImplementation(address(addrs.sharesOwnedAddressList));
+        addrs.ownableAddressListFactory.setImplementation(address(addrs.ownableAddressList));
+        addrs.syncDepositHandlerFactory.setImplementation(address(addrs.syncDepositHandler));
 
         vm.stopBroadcast();
 
-        /* ---------------------------------------------------------------------
-         * Persist addresses to JSON
-         * -------------------------------------------------------------------*/
-        string memory path = string.concat("./deploy/", vm.toString(block.chainid), ".json");
-        string memory json = string.concat(
-            "{\n",
-            '  "GlobalProxy": "',
-            vm.toString(address(addrs.globalProxy)),
-            '",\n',
-            '  "Global": "',
-            vm.toString(address(addrs.global)),
-            '",\n',
-            '  "SharesFactory": "',
-            vm.toString(address(addrs.sharesBeaconFactory)),
-            '",\n',
-            '  "FeeHandlerFactory": "',
-            vm.toString(address(addrs.feeHandlerBeaconFactory)),
-            '",\n',
-            '  "ContinuousFlatRateManagementFeeTrackerFactory": "',
-            vm.toString(address(addrs.continuousFlatRateManagementFeeTrackerBeaconFactory)),
-            '",\n',
-            '  "ContinuousFlatRatePerformanceFeeTrackerFactory": "',
-            vm.toString(address(addrs.continuousFlatRatePerformanceFeeTrackerBeaconFactory)),
-            '",\n',
-            '  "ValuationHandlerFactory": "',
-            vm.toString(address(addrs.valuationHandlerBeaconFactory)),
-            '",\n',
-            '  "AccountERC20TrackerFactory": "',
-            vm.toString(address(addrs.accountERC20TrackerFactory)),
-            '",\n',
-            '  "LinearCreditDebtTrackerFactory": "',
-            vm.toString(address(addrs.linearCreditDebtTrackerBeaconFactory)),
-            '",\n',
-            '  "ERC7540LikeDepositQueueFactory": "',
-            vm.toString(address(addrs.erc7540LikeDepositQueueBeaconFactory)),
-            '",\n',
-            '  "ERC7540LikeRedeemQueueFactory": "',
-            vm.toString(address(addrs.erc7540LikeRedeemQueueBeaconFactory)),
-            '",\n',
-            '  "LimitedAccessLimitedCallForwarderFactory": "',
-            vm.toString(address(addrs.limitedAccessLimitedCallForwarderFactory)),
-            '",\n',
-            '  "SharesLib": "',
-            vm.toString(address(addrs.shares)),
-            '",\n',
-            '  "FeeHandlerLib": "',
-            vm.toString(address(addrs.feeHandler)),
-            '",\n',
-            '  "ContinuousFlatRateManagementFeeTrackerLib": "',
-            vm.toString(address(addrs.continuousFlatRateManagementFeeTracker)),
-            '",\n',
-            '  "ContinuousFlatRatePerformanceFeeTrackerLib": "',
-            vm.toString(address(addrs.continuousFlatRatePerformanceFeeTracker)),
-            '",\n',
-            '  "ValuationHandlerLib": "',
-            vm.toString(address(addrs.valuationHandler)),
-            '",\n',
-            '  "AccountERC20TrackerLib": "',
-            vm.toString(address(addrs.accountERC20Tracker)),
-            '",\n',
-            '  "LinearCreditDebtTrackerLib": "',
-            vm.toString(address(addrs.linearCreditDebtTracker)),
-            '",\n',
-            '  "ERC7540LikeDepositQueueLib": "',
-            vm.toString(address(addrs.erc7540LikeDepositQueue)),
-            '",\n',
-            '  "ERC7540LikeRedeemQueueLib": "',
-            vm.toString(address(addrs.erc7540LikeRedeemQueue)),
-            '",\n',
-            '  "LimitedAccessLimitedCallForwarderLib": "',
-            vm.toString(address(addrs.limitedAccessLimitedCallForwarder)),
-            '"\n',
-            "}\n"
-        );
+        __writeDeploymentArtifacts();
+    }
 
-        vm.writeFile(path, json);
+    function __writeDeploymentArtifacts() private {
+        string memory key = "deploy";
+        vm.serializeAddress(key, "GlobalProxy", address(addrs.globalProxy));
+        vm.serializeAddress(key, "Global", address(addrs.global));
+        vm.serializeAddress(key, "SharesFactory", address(addrs.sharesBeaconFactory));
+        vm.serializeAddress(key, "FeeHandlerFactory", address(addrs.feeHandlerBeaconFactory));
+        vm.serializeAddress(
+            key,
+            "ContinuousFlatRateManagementFeeTrackerFactory",
+            address(addrs.continuousFlatRateManagementFeeTrackerBeaconFactory)
+        );
+        vm.serializeAddress(
+            key,
+            "ContinuousFlatRatePerformanceFeeTrackerFactory",
+            address(addrs.continuousFlatRatePerformanceFeeTrackerBeaconFactory)
+        );
+        vm.serializeAddress(key, "ValuationHandlerFactory", address(addrs.valuationHandlerBeaconFactory));
+        vm.serializeAddress(key, "AccountERC20TrackerFactory", address(addrs.accountERC20TrackerFactory));
+        vm.serializeAddress(key, "LinearCreditDebtTrackerFactory", address(addrs.linearCreditDebtTrackerBeaconFactory));
+        vm.serializeAddress(key, "ERC7540LikeDepositQueueFactory", address(addrs.erc7540LikeDepositQueueBeaconFactory));
+        vm.serializeAddress(key, "ERC7540LikeRedeemQueueFactory", address(addrs.erc7540LikeRedeemQueueBeaconFactory));
+        vm.serializeAddress(
+            key, "LimitedAccessLimitedCallForwarderFactory", address(addrs.limitedAccessLimitedCallForwarderFactory)
+        );
+        vm.serializeAddress(key, "SharesOwnedAddressListFactory", address(addrs.sharesOwnedAddressListFactory));
+        vm.serializeAddress(key, "OwnableAddressListFactory", address(addrs.ownableAddressListFactory));
+        vm.serializeAddress(key, "SyncDepositHandlerFactory", address(addrs.syncDepositHandlerFactory));
+        vm.serializeAddress(key, "SharesLib", address(addrs.shares));
+        vm.serializeAddress(key, "FeeHandlerLib", address(addrs.feeHandler));
+        vm.serializeAddress(
+            key, "ContinuousFlatRateManagementFeeTrackerLib", address(addrs.continuousFlatRateManagementFeeTracker)
+        );
+        vm.serializeAddress(
+            key, "ContinuousFlatRatePerformanceFeeTrackerLib", address(addrs.continuousFlatRatePerformanceFeeTracker)
+        );
+        vm.serializeAddress(key, "ValuationHandlerLib", address(addrs.valuationHandler));
+        vm.serializeAddress(key, "AccountERC20TrackerLib", address(addrs.accountERC20Tracker));
+        vm.serializeAddress(key, "LinearCreditDebtTrackerLib", address(addrs.linearCreditDebtTracker));
+        vm.serializeAddress(key, "ERC7540LikeDepositQueueLib", address(addrs.erc7540LikeDepositQueue));
+        vm.serializeAddress(key, "ERC7540LikeRedeemQueueLib", address(addrs.erc7540LikeRedeemQueue));
+        vm.serializeAddress(
+            key, "LimitedAccessLimitedCallForwarderLib", address(addrs.limitedAccessLimitedCallForwarder)
+        );
+        vm.serializeAddress(key, "SharesOwnedAddressListLib", address(addrs.sharesOwnedAddressList));
+        vm.serializeAddress(key, "OwnableAddressListLib", address(addrs.ownableAddressList));
+        vm.serializeAddress(key, "SyncDepositHandlerLib", address(addrs.syncDepositHandler));
+        vm.serializeAddress(key, "CreWorkflowConsumerFactory", address(addrs.creWorkflowConsumerFactory));
+        string memory json = vm.serializeAddress(key, "CreWorkflowConsumerLib", address(addrs.creWorkflowConsumer));
+
+        vm.createDir("./deploy", true);
+        string memory path = string.concat("./deploy/", vm.toString(block.chainid), ".json");
+        vm.writeJson(json, path);
         console2.log("Deployment artifacts written to", path);
+    }
+
+    function __getChainlinkKeystoneForwarder() private view returns (address) {
+        // Ethereum
+        if (block.chainid == 1) {
+            return 0x0b93082D9b3C7C97fAcd250082899BAcf3af3885;
+        }
+
+        // Arbitrum
+        if (block.chainid == 42161) {
+            return 0xF8344CFd5c43616a4366C34E3EEE75af79a74482;
+        }
+
+        // Base
+        if (block.chainid == 8453) {
+            return 0xF8344CFd5c43616a4366C34E3EEE75af79a74482;
+        }
+
+        // Ethereum Sepolia
+        if (block.chainid == 11155111) {
+            return 0xF8344CFd5c43616a4366C34E3EEE75af79a74482;
+        }
+
+        // MegaETH
+        if (block.chainid == 4326) {
+            return 0x7BCcaFBD064cB3658476066Cc33ceE3F3414c04c;
+        }
+
+        return address(0);
     }
 }
