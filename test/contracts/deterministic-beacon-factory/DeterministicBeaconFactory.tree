@@ -1,0 +1,27 @@
+DeterministicBeaconFactoryTest
+├── When deploying
+│   └── It should set the GLOBAL address.
+├── When calling setImplementation
+│   ├── When the caller is not the owner
+│   │   └── It should revert with {GlobalOwnable__OnlyOwner__Unauthorized}.
+│   └── When the caller is the owner
+│       ├── It should set the implementation address.
+│       └── It should emit a {ImplementationSet} event.
+├── When calling deployProxy
+│   ├── Given a proxy has already been deployed with the same salt and init data
+│   │   └── It should revert.
+│   ├── Given no proxy exists at the deterministic address
+│   │   ├── It should deploy a new beacon proxy.
+│   │   ├── It should set isInstance to true for the deployed proxy.
+│   │   ├── It should emit a {ProxyDeployed} event.
+│   │   └── It should return the proxy address.
+│   └── Given two different deployers use the same salt and init data
+│       └── It should produce different proxy addresses.
+├── When calling computeProxyAddress
+│   ├── It should return the deterministic address for the given salt and init data.
+│   └── It should match the address returned by deployProxy for the same parameters.
+└── When calling isInstance
+    ├── Given the address is a deployed proxy
+    │   └── It should return true.
+    └── Given the address is not a deployed proxy
+        └── It should return false.

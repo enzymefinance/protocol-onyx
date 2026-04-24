@@ -1,0 +1,54 @@
+WalletsManagerTest
+├── When deploying
+│   ├── It should set the CCIP router address.
+│   └── It should set the DEPOSITOR_WALLETS_FACTORY.
+├── When calling ccipReceive
+│   ├── When the caller is not the CCIP router
+│   │   └── It should revert with {InvalidRouter}.
+│   └── When the caller is the CCIP router
+│       ├── Given the wallet already exists for the user
+│       │   └── It should reuse the existing wallet.
+│       ├── Given the wallet does not exist for the user
+│       │   ├── Given the predicted address has code
+│       │   │   └── It should use the existing wallet.
+│       │   └── Given the predicted address has no code
+│       │       └── It should deploy a new wallet via the factory.
+│       ├── When there are received tokens
+│       │   └── It should transfer all received tokens to the wallet.
+│       ├── When the message has no data
+│       │   ├── It should not call processMessageData.
+│       │   └── It should emit a {CCIPMessageProcessed} event.
+│       └── When the message has data
+│           ├── When processMessageData succeeds
+│           │   ├── It should not emit a {MessageDataProcessingFailed} event.
+│           │   └── It should emit a {CCIPMessageProcessed} event.
+│           └── When processMessageData fails
+│               ├── It should emit a {MessageDataProcessingFailed} event with the revert reason.
+│               ├── It should not revert the token transfers.
+│               └── It should emit a {CCIPMessageProcessed} event.
+├── When calling processMessageData
+│   ├── When the caller is not the contract itself
+│   │   └── It should revert with {WalletsManager__ProcessMessageData__OnlySelfCallAllowed}.
+│   └── When the caller is the contract itself
+│       ├── When there are no calls and no tokens to return
+│       │   ├── It should not execute any calls on the wallet.
+│       │   └── It should not send a CCIP message.
+│       ├── When there are calls
+│       │   └── It should execute the calls on the wallet.
+│       ├── When there are no tokens to return
+│       │   └── It should not send a CCIP message.
+│       └── When there are tokens to return
+│           ├── It should build the return message via the wallet.
+│           ├── It should deduct the CCIP fee from the fee token amount.
+│           └── It should send the CCIP message via the wallet.
+├── When calling batchSendTokensViaCCIP
+│   ├── When the caller is not an admin or owner
+│   │   └── It should revert with {ComponentHelpersMixin__OnlyAdminOrOwner__Unauthorized}.
+│   └── When the caller is an admin or owner
+│       ├── It should build and send a return message for each wallet with native fee token.
+│       ├── When there is remaining ETH balance
+│       │   └── It should return the remaining ETH to the caller.
+│       └── When there is no remaining ETH balance
+│           └── It should not send ETH to the caller.
+└── When calling computeWalletAddress
+    └── It should return the deterministic wallet address.

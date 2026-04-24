@@ -30,3 +30,6 @@ ignore = [
     "src/interfaces/external/**/*.sol",
     "test/**/*.sol"
 ]
+
+[fmt]
+ignore = ["lib/**/*.sol"]

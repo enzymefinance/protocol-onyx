@@ -1,0 +1,48 @@
+DepositorWalletTest
+├── When deploying
+│   └── It should set the CCIP router address.
+├── When calling init
+│   ├── Given it has already been initialized
+│   │   └── It should revert.
+│   └── Given it has not been initialized
+│       ├── It should set the wallets manager.
+│       ├── It should set the user.
+│       ├── It should set the chain selector.
+│       ├── It should emit a {WalletsManagerSet} event.
+│       ├── It should emit a {UserSet} event.
+│       └── It should emit a {ChainSelectorSet} event.
+├── When calling sendCCIPMessage
+│   ├── When the caller is not the wallets manager
+│   │   └── It should revert with {DepositorWallet__OnlyWalletsManager__Unauthorized}.
+│   └── When the caller is the wallets manager
+│       ├── It should approve the tokens for the CCIP router.
+│       ├── When the fee token is the native currency
+│       │   ├── It should send the CCIP message with native fee value.
+│       │   └── It should emit a {CCIPMessageSent} event.
+│       └── When the fee token is an ERC20 token
+│           ├── It should approve the fee token for the CCIP router.
+│           ├── It should send the CCIP message without native fee value.
+│           └── It should emit a {CCIPMessageSent} event.
+├── When calling buildTokenReturnMessage
+│   ├── It should set the receiver to the user.
+│   ├── It should set the data to empty.
+│   ├── It should set the token amounts with the current balances.
+│   ├── It should set the fee token.
+│   └── It should return the CCIP fee.
+├── When calling executeCalls
+│   ├── When the caller is not the wallets manager
+│   │   └── It should revert with {DepositorWallet__OnlyWalletsManager__Unauthorized}.
+│   └── When the caller is the wallets manager
+│       ├── When a call fails
+│       │   └── It should revert.
+│       └── When all calls succeed
+│           ├── It should execute all calls.
+│           └── It should emit a {CallExecuted} event for each call.
+├── When receiving native currency
+│   └── It should accept native currency.
+├── When calling getWalletsManager
+│   └── It should return the wallets manager address.
+├── When calling getUser
+│   └── It should return the user.
+└── When calling getChainSelector
+    └── It should return the chain selector.
