@@ -9,6 +9,8 @@ optimizer = true
 optimizer_runs = 200
 fs_permissions = [{ access = "write", path = "./deploy/"}]
 
+[profile.ci]
+
 [rpc_endpoints]
 mainnet = "${ETHEREUM_NODE_MAINNET}"
 arbitrum = "${ETHEREUM_NODE_ARBITRUM}"
