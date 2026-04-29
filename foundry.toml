@@ -19,6 +19,12 @@ plume = "${ETHEREUM_NODE_PLUME}"
 mega_eth = "${ETHEREUM_NODE_MEGA_ETH}"
 ethereum_sepolia = "${ETHEREUM_NODE_ETHEREUM_SEPOLIA}"
 
+[etherscan]
+mainnet          = { key = "${ETHERSCAN_API_KEY}", chain = 1,        url = "https://api.etherscan.io/v2/api?chainid=1" }
+arbitrum         = { key = "${ETHERSCAN_API_KEY}", chain = 42161,    url = "https://api.etherscan.io/v2/api?chainid=42161" }
+base             = { key = "${ETHERSCAN_API_KEY}", chain = 8453,     url = "https://api.etherscan.io/v2/api?chainid=8453" }
+ethereum_sepolia = { key = "${ETHERSCAN_API_KEY}", chain = 11155111, url = "https://api.etherscan.io/v2/api?chainid=11155111" }
+
 [lint]
 # Several lints fail on acronyms like "ERC" instead of "Erc", so we exclude those
 exclude_lints = [

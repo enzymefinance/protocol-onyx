@@ -38,6 +38,17 @@ forge test
 
 Utility scripts can be found in the `scripts/` folder.
 
+## Deploying contracts
+
+```
+make deploy NETWORK=<spec> CONTRACT=<Name>
+```
+
+- `<spec>`: single network (`arbitrum`), comma-separated subset (`arbitrum,base`), or `all` (deploys to all networks).
+- Optional constructor args: write `.args.<short>.txt` at the repo root before deploying. Short names: `mainnet, arbitrum, base, sepolia, megaeth, plume`. Omit the file if the contract has no constructor args.
+- Defaults: keystore `<short>-deployer` (override via `ACCOUNT=...`); verifier resolved per network (Etherscan v2 via `foundry.toml [etherscan]`, Blockscout for `mega_eth` and `plume`).
+- See `make help` for full options.
+
 ## Licensing
 
 - Source-available under Business Source License 1.1 (BUSL-1.1).
