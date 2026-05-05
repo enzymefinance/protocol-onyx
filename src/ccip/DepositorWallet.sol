@@ -99,6 +99,8 @@ contract DepositorWallet is Initializable {
         StorageHelpersLib.verifyErc7201LocationForId({
             _location: DEPOSITOR_WALLET_STORAGE_LOCATION, _id: DEPOSITOR_WALLET_STORAGE_LOCATION_ID
         });
+
+        _disableInitializers();
     }
 
     //==================================================================================================================

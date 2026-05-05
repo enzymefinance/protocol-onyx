@@ -2,6 +2,8 @@ DepositorWalletTest
 ├── When deploying
 │   └── It should set the CCIP router address.
 ├── When calling init
+│   ├── Given the contract is the implementation
+│   │   └── It should revert.
 │   ├── Given it has already been initialized
 │   │   └── It should revert.
 │   └── Given it has not been initialized

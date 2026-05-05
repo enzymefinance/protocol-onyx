@@ -14,6 +14,8 @@ pragma solidity 0.8.28;
 import {Test} from "forge-std/Test.sol";
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {BeaconProxy} from "@openzeppelin/contracts/proxy/beacon/BeaconProxy.sol";
+import {UpgradeableBeacon} from "@openzeppelin/contracts/proxy/beacon/UpgradeableBeacon.sol";
 import {Initializable} from "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import {Client} from "@chainlink-ccip/libraries/Client.sol";
 import {IRouterClient} from "@chainlink-ccip/interfaces/IRouterClient.sol";
@@ -24,6 +26,8 @@ import {StorageHelpersLib} from "src/utils/StorageHelpersLib.sol";
 import {MockERC20} from "test/mocks/MockERC20.sol";
 
 contract DepositorWalletTest is Test {
+    DepositorWallet implementation;
+    UpgradeableBeacon beacon;
     DepositorWallet wallet;
 
     address ccipRouter = makeAddr("ccipRouter");
@@ -38,8 +42,12 @@ contract DepositorWalletTest is Test {
     bytes32 mockMessageId = keccak256("mockMessageId");
 
     function setUp() public {
-        wallet = new DepositorWallet(ccipRouter);
-        wallet.init({_walletsManager: walletsManager, _user: user, _chainSelector: chainSelector});
+        implementation = new DepositorWallet(ccipRouter);
+        beacon = new UpgradeableBeacon(address(implementation), address(this));
+
+        bytes memory initData = abi.encodeCall(DepositorWallet.init, (walletsManager, user, chainSelector));
+
+        wallet = DepositorWallet(payable(address(new BeaconProxy(address(beacon), initData))));
 
         token1 = new MockERC20(18);
         token2 = new MockERC20(18);
@@ -55,6 +63,13 @@ contract DepositorWalletTest is Test {
         _;
     }
 
+    function test_RevertGiven_TheContractIsTheImplementation() external whenCallingInit {
+        // It should revert.
+        // Initializers are disabled in the constructor, so the implementation cannot be initialized directly.
+        vm.expectRevert({revertData: Initializable.InvalidInitialization.selector, reverter: address(implementation)});
+        implementation.init({_walletsManager: walletsManager, _user: user, _chainSelector: chainSelector});
+    }
+
     function test_RevertGiven_ItHasAlreadyBeenInitialized() external whenCallingInit {
         // It should revert.
         vm.expectRevert({revertData: Initializable.InvalidInitialization.selector, reverter: address(wallet)});
@@ -62,7 +77,7 @@ contract DepositorWalletTest is Test {
     }
 
     function test_GivenItHasNotBeenInitialized() external whenCallingInit {
-        DepositorWallet freshWallet = new DepositorWallet(ccipRouter);
+        DepositorWallet freshWallet = DepositorWallet(payable(address(new BeaconProxy(address(beacon), ""))));
 
         // It should emit a {WalletsManagerSet} event.
         vm.expectEmit(address(freshWallet));
