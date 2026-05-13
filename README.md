@@ -45,8 +45,11 @@ make deploy NETWORK=<spec> CONTRACT=<Name>
 ```
 
 - `<spec>`: single network (`arbitrum`), comma-separated subset (`arbitrum,base`), or `all` (deploys to all networks).
-- Optional constructor args: write `.args.<short>.txt` at the repo root before deploying. Short names: `mainnet, arbitrum, base, sepolia, megaeth, plume`. Omit the file if the contract has no constructor args.
-- Defaults: keystore `<short>-deployer` (override via `ACCOUNT=...`); verifier resolved per network (Etherscan v2 via `foundry.toml [etherscan]`, Blockscout for `mega_eth` and `plume`).
+- Supported networks: `mainnet, arbitrum, base, ethereum_sepolia, mega_eth, plume`.
+- Optional constructor args: write `deploy/<CONTRACT>/.args.<network>.txt` before deploying (e.g., `deploy/SharesDeployer/.args.ethereum_sepolia.txt`). Omit the file if the contract has no constructor args.
+- Defaults: keystore `<network>-deployer` (override via `ACCOUNT=...`); verifier resolved per network (Etherscan v2 via `foundry.toml [etherscan]`, Blockscout for `mega_eth` and `plume`).
+- Successful deploys append to `deploy/logs/log.<network>.txt`.
+- Multi-network deploys prompt for each keystore password sequentially upfront (deduped by account), then run `forge create` concurrently. Per-chain log lines are prefixed with `[<network>]` in a distinct color; set `NO_COLOR=1` to disable (also auto-disabled when stdout isn't a TTY).
 - See `make help` for full options.
 
 ## Licensing
